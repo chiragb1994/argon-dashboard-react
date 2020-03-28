@@ -29,16 +29,17 @@ class Header extends React.Component {
             <CardBody>
               <Row>
                 <div className="col">
-                  <CardTitle tag="h5" className="text-uppercase text-muted mb-0">{title}</CardTitle>
-                  <span className="h2 font-weight-bold mb-0">
-                    <NumberFormat value={count} displayType='text' thousandSeparator={true} thousandsGroupStyle='lakh'/>
+                  <span className="h4 text-uppercase text-muted mb-0 card-title">{title}</span>
+                  <span className="h4 font-weight-bold mb-0" style={{float: 'right'}}>
+                    <NumberFormat value={count} displayType='text' thousandSeparator={true}
+                                  thousandsGroupStyle='lakh'/>
                   </span>
                 </div>
-                <Col className="col-auto">
-                  <div className={'icon icon-shape ' + iconBg + ' text-white rounded-circle shadow'}>
-                    <i className={'fas ' + iconClass}/>
-                  </div>
-                </Col>
+                {/*<Col className="col-auto">*/}
+                {/*  <div className={'icon icon-shape ' + iconBg + ' text-white rounded-circle shadow'}>*/}
+                {/*    <i className={'fas ' + iconClass}/>*/}
+                {/*  </div>*/}
+                {/*</Col>*/}
               </Row>
             </CardBody>
           </Card>
