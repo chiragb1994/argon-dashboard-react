@@ -18,7 +18,8 @@
 import React from "react";
 import NumberFormat from 'react-number-format';
 // reactstrap components
-import {Card, CardBody, CardTitle, Container, Row, Col} from "reactstrap";
+import {Card, CardBody, Col, Container, Row} from "reactstrap";
+import PropTypes from "prop-types";
 
 class Header extends React.Component {
 
@@ -48,17 +49,20 @@ class Header extends React.Component {
   }
 
   render() {
+    const {showCards} = this.props;
     return (
         <>
           <div className="header bg-gradient-info pb-7 pt-4 pt-md-6 pb-md-8">
             <Container fluid>
               <div className="header-body">
                 {/* Card stats */}
-                <Row>
-                  {this.getCardCol('Volunteers', 341234, 'bg-danger', 'fa-chart-bar')}
-                  {this.getCardCol('Requests processed', 3456, 'bg-warning', 'fa-chart-pie')}
-                  {this.getCardCol('Supporting Organizations', 7429, 'bg-yellow', 'fa-users')}
-                </Row>
+                {showCards ?
+                    <Row>
+                      {this.getCardCol('Volunteers', 314, 'bg-danger', 'fa-chart-bar')}
+                      {this.getCardCol('Requests processed', 164, 'bg-warning', 'fa-chart-pie')}
+                      {this.getCardCol('Supporting Organizations', 7, 'bg-yellow', 'fa-users')}
+                    </Row>
+                    : null}
               </div>
             </Container>
           </div>
@@ -66,5 +70,13 @@ class Header extends React.Component {
     );
   }
 }
+
+Header.defaultProps = {
+  showCards: true
+};
+
+Header.propTypes = {
+  showCards: PropTypes.bool
+};
 
 export default Header;

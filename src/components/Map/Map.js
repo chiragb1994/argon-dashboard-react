@@ -77,7 +77,7 @@ const MapWrapper = withScriptjs(
     ))
 );
 
-class Maps extends React.Component {
+class Map extends React.Component {
   render() {
     return (
         <MapWrapper
@@ -98,4 +98,4 @@ class Maps extends React.Component {
   }
 }
 
-export default Maps;
+export default Map;
