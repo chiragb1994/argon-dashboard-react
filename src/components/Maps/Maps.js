@@ -81,11 +81,11 @@ class Maps extends React.Component {
   render() {
     return (
         <MapWrapper
-            googleMapURL="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"
+            googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7bivKN4OXzEKDYN5IYEVap2NXeHCEdlo"
             loadingElement={<div style={{height: `100%`}}/>}
             containerElement={
               <div
-                  style={{height: `600px`}}
+                  style={{height: `300px`}}
                   className="map-canvas"
                   id="map-canvas"
               />

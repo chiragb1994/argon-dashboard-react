@@ -22,29 +22,15 @@ import classnames from "classnames";
 import Chart from "chart.js";
 // react plugin used to create charts
 // reactstrap components
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Container,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Nav,
-  NavItem,
-  NavLink,
-  Row
-} from "reactstrap";
+import {Card, CardBody, CardHeader, Col, Container, Nav, NavItem, NavLink, Row} from "reactstrap";
 // core components
 import {chartOptions, parseOptions} from "variables/charts.js";
 
 import Header from "components/Headers/Header.js";
-import Form from "reactstrap/lib/Form";
 import Maps from "components/Maps/Maps.js";
+import OrganizationRegistration from "components/Forms/OrganizationRegistration.js";
+import SeniorCitizenRegistration from "components/Forms/SeniorCitizenRegistration.js";
+import VolunteerRegistration from "components/Forms/VolunteerRegistration.js";
 
 class Index extends React.Component {
   constructor(props) {
@@ -112,7 +98,7 @@ class Index extends React.Component {
                       </div>
                     </Row>
                   </CardHeader>
-                  <CardBody>
+                  <CardBody className="pre-scrollable">
                     <Maps/>
                   </CardBody>
                 </Card>
@@ -126,11 +112,9 @@ class Index extends React.Component {
                       </div>
                     </Row>
                   </CardHeader>
-                  <CardBody>
+                  <CardBody className="pre-scrollable">
                     {/* Chart */}
-                    <iframe
-                        src="https://docs.google.com/forms/d/e/1FAIpQLSfm4ODDs0YtmmT4RzWtkdoJb3_BbjNDDKuEErOJOLsmsLVHeQ/viewform?embedded=true" height="360" frameBorder="0" marginHeight="0" marginWidth="0" title="requestHelp">Loading…
-                    </iframe>
+                    <SeniorCitizenRegistration/>
                   </CardBody>
                 </Card>
               </Col>
@@ -145,10 +129,8 @@ class Index extends React.Component {
                       </div>
                     </Row>
                   </CardHeader>
-                  <CardBody>
-                    <iframe
-                        src="https://docs.google.com/forms/d/e/1FAIpQLScgxYIsX377RUtGd-Ude1p4LQEsUccqkoLNqAjegY0WXMCIvA/viewform?embedded=true" height="360" frameBorder="0" marginHeight="0" marginWidth="0" title="volunteer">Loading…
-                    </iframe>
+                  <CardBody className="pre-scrollable">
+                    <VolunteerRegistration/>
                   </CardBody>
                 </Card>
               </Col>
@@ -161,65 +143,10 @@ class Index extends React.Component {
                       </div>
                     </Row>
                   </CardHeader>
-                  <CardBody>
-                    <p>If you are an organization and would like to be a part of the efforts in here, please drop your details here. We will get back to you.</p>
-                    <Form role="form">
-                      <FormGroup>
-                        <InputGroup className="input-group-alternative mb-3">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni-hat-3" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input placeholder="Name" type="text" />
-                        </InputGroup>
-                      </FormGroup>
-                      <FormGroup>
-                        <InputGroup className="input-group-alternative mb-3">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="fas fa-users" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input placeholder="Organization Name" type="text"/>
-                        </InputGroup>
-                      </FormGroup>
-                      <FormGroup>
-                        <InputGroup className="input-group-alternative mb-3">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni-mobile-button" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input placeholder="Mobile" type="text"/>
-                        </InputGroup>
-                      </FormGroup>
-                      <FormGroup>
-                        <InputGroup className="input-group-alternative mb-3">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni-email-83" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input placeholder="Email" type="email"/>
-                        </InputGroup>
-                      </FormGroup>
-                      <FormGroup>
-                        <InputGroup className="input-group-alternative mb-3">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="fas fa-comments" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input placeholder="Comments" type="comments"/>
-                        </InputGroup>
-                      </FormGroup>
-                      <div className="text-center">
-                        <Button className="mt-4" color="primary" type="button">
-                          Submit
-                        </Button>
-                      </div>
-                    </Form>
+                  <CardBody className="pre-scrollable">
+                    <p>If you are an organization and would like to be a part of the efforts in
+                      here, please drop your details here. We will get back to you.</p>
+                    <OrganizationRegistration/>
                   </CardBody>
                 </Card>
               </Col>
