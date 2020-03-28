@@ -53,10 +53,10 @@ class Register extends React.Component {
                   <span className="btn-inner--icon">
                     <img
                       alt="..."
-                      src={require("assets/img/icons/common/github.svg")}
+                      src={require("assets/img/icons/common/facebook.svg")}
                     />
                   </span>
-                  <span className="btn-inner--text">Github</span>
+                  <span className="btn-inner--text">Facebook</span>
                 </Button>
                 <Button
                   className="btn-neutral btn-icon"
@@ -109,12 +109,12 @@ class Register extends React.Component {
                     <Input placeholder="Password" type="password" autoComplete="new-password"/>
                   </InputGroup>
                 </FormGroup>
-                <div className="text-muted font-italic">
-                  <small>
-                    password strength:{" "}
-                    <span className="text-success font-weight-700">strong</span>
-                  </small>
-                </div>
+                {/*<div className="text-muted font-italic">*/}
+                {/*  <small>*/}
+                {/*    password strength:{" "}*/}
+                {/*    <span className="text-success font-weight-700">strong</span>*/}
+                {/*  </small>*/}
+                {/*</div>*/}
                 <Row className="my-4">
                   <Col xs="12">
                     <div className="custom-control custom-control-alternative custom-checkbox">
