@@ -17,9 +17,8 @@
 */
 import React from "react";
 // node.js library that concatenates classes (strings)
-import classnames from "classnames";
 // reactstrap components
-import {Card, CardBody, CardHeader, Col, Container, Nav, NavItem, NavLink, Row} from "reactstrap";
+import {Card, CardBody, CardHeader, Col, Container, Row} from "reactstrap";
 import Header from "components/Headers/Header.js";
 import Map from "components/Map/Map.js";
 import OrganizationRegistration from "components/Forms/OrganizationRegistration.js";
@@ -29,63 +28,6 @@ import VolunteerRegistration from "components/Forms/VolunteerRegistration.js";
 // core components
 
 class Index extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeNav: 1,
-    };
-  }
-
-  toggleNavs = (e, index) => {
-    e.preventDefault();
-  };
-
-  overviewCard() {
-    return (
-        <Card className="bg-gradient-default shadow">
-          <CardHeader className="bg-transparent">
-            <Row className="align-items-center">
-              <div className="col">
-                <h2 className="text-white mb-0">Overview</h2>
-              </div>
-              <div className="col">
-                <Nav className="justify-content-end" pills>
-                  <NavItem>
-                    <NavLink
-                        className={classnames("py-2 px-3", {
-                          active: this.state.activeNav === 1
-                        })}
-                        href=""
-                        onClick={e => this.toggleNavs(e, 1)}
-                    >
-                      <span className="d-none d-md-block">Volunteer</span>
-                      <span className="d-md-none">V</span>
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                        className={classnames("py-2 px-3", {
-                          active: this.state.activeNav === 2
-                        })}
-                        data-toggle="tab"
-                        href=""
-                        onClick={e => this.toggleNavs(e, 2)}
-                    >
-                      <span className="d-none d-md-block">Requests</span>
-                      <span className="d-md-none">R</span>
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </div>
-            </Row>
-          </CardHeader>
-          <CardBody className="pre-scrollable">
-            <Map/>
-            {/*<iframe src="http://www.thebangaloreguy.com/covid19/COVID_SOS_v0.html" title="map" height="300px"/>*/}
-          </CardBody>
-        </Card>
-    )
-  }
 
   getCard(header, body) {
     return (
@@ -112,7 +54,7 @@ class Index extends React.Component {
           <Container className="mt--7" fluid>
             <Row>
               <Col className="mb-5 mb-xl-0" xl="8">
-                {this.overviewCard()}
+                <Map/>
               </Col>
               <Col xl="4">
                 {this.getCard('Request Help', <SeniorCitizenRegistration/>)}

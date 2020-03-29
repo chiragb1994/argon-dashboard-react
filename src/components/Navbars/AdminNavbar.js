@@ -17,20 +17,9 @@
 */
 import React from "react";
 // reactstrap components
-import {
-  Button,
-  Container,
-  Form,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Navbar
-} from "reactstrap";
+import {Container, Navbar} from "reactstrap";
 import UserDropDown from "components/DropDown/UserDropDown.js";
 import ReactGA from "react-ga";
-import ButtonGroup from "reactstrap/es/ButtonGroup";
 
 class AdminNavbar extends React.Component {
   constructor(props) {
