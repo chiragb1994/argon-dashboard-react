@@ -16,84 +16,44 @@
 
 */
 import React from "react";
-// react plugin used to create google maps
-import {GoogleMap, Marker, withGoogleMap, withScriptjs} from "react-google-maps";
+// react plugin used to create maps
+import mapBoxGl from "mapbox-gl";
 // reactstrap components
 // core components
-// mapTypeId={google.maps.MapTypeId.ROADMAP}
-const MapWrapper = withScriptjs(
-    withGoogleMap(props => (
-        <GoogleMap
-            defaultZoom={12}
-            defaultCenter={{lat: 12.9716, lng: 77.5946}}
-            defaultOptions={{
-              scrollwheel: false,
-              styles: [
-                {
-                  featureType: "administrative",
-                  elementType: "labels.text.fill",
-                  stylers: [{color: "#444444"}]
-                },
-                {
-                  featureType: "landscape",
-                  elementType: "all",
-                  stylers: [{color: "#f2f2f2"}]
-                },
-                {
-                  featureType: "poi",
-                  elementType: "all",
-                  stylers: [{visibility: "off"}]
-                },
-                {
-                  featureType: "road",
-                  elementType: "all",
-                  stylers: [{saturation: -100}, {lightness: 45}]
-                },
-                {
-                  featureType: "road.highway",
-                  elementType: "all",
-                  stylers: [{visibility: "simplified"}]
-                },
-                {
-                  featureType: "road.arterial",
-                  elementType: "labels.icon",
-                  stylers: [{visibility: "off"}]
-                },
-                {
-                  featureType: "transit",
-                  elementType: "all",
-                  stylers: [{visibility: "off"}]
-                },
-                {
-                  featureType: "water",
-                  elementType: "all",
-                  stylers: [{color: "#5e72e4"}, {visibility: "on"}]
-                }
-              ]
-            }}
-        >
-          <Marker position={{lat: 12.9716, lng: 77.5946}}/>
-        </GoogleMap>
-    ))
-);
 
 class Map extends React.Component {
+  constructor(props) {
+    super(props);
+    mapBoxGl.accessToken = 'pk.eyJ1IjoiY292aWQxOS1zb3MiLCJhIjoiY2s4YnF1dnZjMGR3czNscWYwNGRtbnU1aSJ9.Ju7HmRcG8xQkaI5WauDbJA';
+  }
+
+  componentDidMount() {
+    const map = new mapBoxGl.Map({
+      container: 'mapDiv',
+      style: 'mapbox://styles/covid19-sos/ck8cta3r11axi1io0vjnx6y7s',
+      center: [79.08886, 23.373778],
+      zoom: 3.25,
+      attributionControl: false,
+      maxZoom: 13.5
+    })
+    .addControl(
+        new mapBoxGl.NavigationControl({
+          showCompass: true
+        })
+    )
+    .addControl(new mapBoxGl.FullscreenControl())
+    .addControl(
+        new mapBoxGl.AttributionControl({
+          compact: true
+        })
+    )
+    .addControl(new mapBoxGl.ScaleControl())
+    .addControl(new mapBoxGl.GeolocateControl());
+  }
+
   render() {
     return (
-        <MapWrapper
-            googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7bivKN4OXzEKDYN5IYEVap2NXeHCEdlo"
-            loadingElement={<div style={{height: `100%`}}/>}
-            containerElement={
-              <div
-                  style={{height: `300px`}}
-                  className="map-canvas"
-                  id="map-canvas"
-              />
-            }
-            mapElement={
-              <div style={{height: `100%`, borderRadius: "inherit"}}/>
-            }
-        />
+        <div id="mapDiv"/>
     );
   }
 }

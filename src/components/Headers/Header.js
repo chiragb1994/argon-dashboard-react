@@ -52,7 +52,7 @@ class Header extends React.Component {
     const {showCards} = this.props;
     return (
         <>
-          <div className="header bg-gradient-info pb-7 pt-4 pt-md-6 pb-md-8">
+          <div className="header bg-gradient-info pb-7 pt-4 pt-md-7 pb-md-8">
             <Container fluid>
               <div className="header-body">
                 {/* Card stats */}

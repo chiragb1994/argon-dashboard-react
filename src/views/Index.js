@@ -55,7 +55,7 @@ class Index extends React.Component {
                         className={classnames("py-2 px-3", {
                           active: this.state.activeNav === 1
                         })}
-                        href="#pablo"
+                        href=""
                         onClick={e => this.toggleNavs(e, 1)}
                     >
                       <span className="d-none d-md-block">Volunteer</span>
@@ -68,7 +68,7 @@ class Index extends React.Component {
                           active: this.state.activeNav === 2
                         })}
                         data-toggle="tab"
-                        href="#pablo"
+                        href=""
                         onClick={e => this.toggleNavs(e, 2)}
                     >
                       <span className="d-none d-md-block">Requests</span>
@@ -81,6 +81,7 @@ class Index extends React.Component {
           </CardHeader>
           <CardBody className="pre-scrollable">
             <Map/>
+            {/*<iframe src="http://www.thebangaloreguy.com/covid19/COVID_SOS_v0.html" title="map" height="300px"/>*/}
           </CardBody>
         </Card>
     )

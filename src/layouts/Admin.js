@@ -25,8 +25,14 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 
 import routes from "routes.js";
+import ReactGA from 'react-ga';
 
 class Admin extends React.Component {
+  componentDidMount() {
+    ReactGA.initialize('UA-143016880-1');
+    ReactGA.pageview(window.location.pathname + window.location.search, ["covid-sos-v1"], "covid-sos-v1");
+  }
+
   componentDidUpdate(e) {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
