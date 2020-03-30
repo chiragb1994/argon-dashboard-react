@@ -27,8 +27,8 @@ import {withRouter} from "react-router";
 
 const defaultData = {
   login: {
-    username: '9582148040',
-    password: 'Qwerty@12345'
+    username: '',
+    password: ''
   },
   isSubmitClicked: false
 };
@@ -61,6 +61,8 @@ class LoginForm extends React.Component {
     makeApiCall(config.loginEndpoint, 'POST', login, (response) => {
       if (response.access_level) {
         localStorage.setItem(config.accessTypeStorageKey, response.access_level);
+        localStorage.setItem(config.userNameStorageKey, response.username);
+        localStorage.setItem(config.userIdStorageKey, response.user_id);
         this.props.history.push("/");
       }
     });

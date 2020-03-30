@@ -11,7 +11,7 @@ const config = {
   mapAuthEndpoint: baseUrl + '/mapAuth',
   assignEndpoint: baseUrl + '/assign',
   accessTypeStorageKey: 'access_level',
-  userNameStorageKey: 'user_name',
+  userNameStorageKey: 'username',
   userIdStorageKey: 'user_id',
   superuserAccessKey: 'superuser',
 };

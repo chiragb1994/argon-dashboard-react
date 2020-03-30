@@ -125,8 +125,8 @@ class Map extends React.Component {
           'type': 'symbol',
           'source': 'allData',
           'layout': {
-            'icon-image': type === 'VOLUNTEER' ? 'arrow' : 'house',
-            'icon-size': 0.05,
+            'icon-image': type === 'VOLUNTEER' ? 'volunteer' : 'old',
+            'icon-size': 0.07,
             'icon-allow-overlap': true
           },
           'filter': ['==', 'type', type]

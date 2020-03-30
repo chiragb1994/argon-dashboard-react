@@ -40,7 +40,6 @@ export const makeApiCall = (url, method, data, successCb = null) => {
   .catch(error => {
     console.log(error);
     NotificationManager.error(error.toString());
-    this.setState({isSubmitClicked: false});
   });
 };
 
