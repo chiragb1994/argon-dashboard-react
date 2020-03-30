@@ -19,21 +19,21 @@
 import React from "react";
 // nodejs library to set properties for components
 // reactstrap components
-import {Form, Button, FormGroup, InputGroup, InputGroupAddon, InputGroupText} from "reactstrap";
+import {Button, Form, FormGroup, InputGroup, InputGroupAddon, InputGroupText} from "reactstrap";
 import {geolocated} from "react-geolocated";
 import FormGroupTemplate from "./FormGroupTemplate";
 import NumberFormat from 'react-number-format';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
 import config from "config/config";
+import {makeApiCall} from "utils/utils";
 
 const defaultData = {
   volunteer: {
     name: '',
-    mobile: '',
-    email: '',
+    mob_number: '',
+    email_id: '',
     address: '',
-    lat: '',
-    long: '',
+    latitude: '',
+    longitude: '',
     checked: ''
   },
   isSubmitClicked: false
@@ -58,7 +58,7 @@ class VolunteerRegistration extends React.Component {
 
   isSubmitDisabled() {
     const {volunteer, isSubmitClicked} = this.state;
-    return isSubmitClicked || !volunteer.name || !volunteer.mobile || !volunteer.email
+    return isSubmitClicked || !volunteer.name || !volunteer.mob_number || !volunteer.email_id
         || !volunteer.address
         || !volunteer.checked;
   }
@@ -68,32 +68,10 @@ class VolunteerRegistration extends React.Component {
     const {volunteer} = this.state;
     const {isGeolocationAvailable, isGeolocationEnabled, coords} = this.props;
     if (isGeolocationAvailable && isGeolocationEnabled && coords) {
-      volunteer.lat = coords.latitude;
-      volunteer.long = coords.longitude;
+      volunteer.latitude = coords.latitude;
+      volunteer.longitude = coords.longitude;
     }
-    const requestOptions = {
-      method: 'POST'
-    };
-    fetch(config.volunteerEndpoint
-        + '?name=' + volunteer.name
-        + '&mob_number=' + volunteer.mobile
-        + '&email_id=' + volunteer.email
-        + '&address=' + volunteer.address
-        + '&latitude=' + volunteer.lat
-        + '&longitude=' + volunteer.long,
-        requestOptions)
-    .then(response => {
-      console.log(response);
-      return response.statusText;
-    })
-    .then(data => {
-      console.log(data);
-      NotificationManager.success(data);
-    })
-    .catch(error => {
-      NotificationManager.error(error.toString());
-      this.setState({isSubmitClicked: false});
-    });
+    makeApiCall(config.volunteerEndpoint, 'POST', volunteer);
     event.preventDefault();
   }
 
@@ -122,11 +100,11 @@ class VolunteerRegistration extends React.Component {
                              onChange={e => this.updateData(e, 'name')}/>
           <FormGroupTemplate iconClass="fab fa-whatsapp" placeholder="WhatsApp Contact Number"
                              type="text"
-                             value={volunteer.mobile}
-                             onChange={e => this.updateData(e, 'mobile')}/>
+                             value={volunteer.mob_number}
+                             onChange={e => this.updateData(e, 'mob_number')}/>
           <FormGroupTemplate iconClass="ni ni-email-83" placeholder="Email" type="email"
-                             value={volunteer.email}
-                             onChange={e => this.updateData(e, 'email')}/>
+                             value={volunteer.email_id}
+                             onChange={e => this.updateData(e, 'email_id')}/>
           <FormGroupTemplate iconClass="fas fa-address-card"
                              placeholder="Location (Mention nearest Maps Landmark - that you specify on apps like Ola, Uber and Swiggy)"
                              value={volunteer.address}

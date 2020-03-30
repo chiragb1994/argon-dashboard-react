@@ -17,9 +17,9 @@
 */
 import React from "react";
 // reactstrap components
-import {Button, Card, CardBody, CardHeader, Col, Container, Form, Row} from "reactstrap";
+import {Card, CardBody, CardHeader, Col, Container, Row} from "reactstrap";
 import Header from "components/Headers/Header.js";
-import FormGroupTemplate from "components/Forms/FormGroupTemplate";
+import LoginForm from "components/Forms/LoginForm";
 
 class Login extends React.Component {
   render() {
@@ -37,15 +37,7 @@ class Login extends React.Component {
                     </div>
                   </CardHeader>
                   <CardBody className="px-lg-5 py-lg-5">
-                    <Form role="form">
-                      <FormGroupTemplate iconClass="ni ni-email-83" placeholder="Email" type="email"/>
-                      <FormGroupTemplate iconClass="ni ni-lock-circle-open" placeholder="Password" type="password"/>
-                      <div className="text-center">
-                        <Button className="my-4" color="primary" type="button">
-                          Sign in
-                        </Button>
-                      </div>
-                    </Form>
+                    <LoginForm/>
                   </CardBody>
                 </Card>
               </Col>

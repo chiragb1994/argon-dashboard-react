@@ -23,14 +23,14 @@ import {Button, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText} f
 import Form from "reactstrap/lib/Form";
 import FormGroupTemplate from "./FormGroupTemplate";
 import config from "config/config";
-import {NotificationManager} from "react-notifications";
+import {makeApiCall} from "utils/utils";
 
 const defaultData = {
   organisation: {
     name: '',
-    organisationName: '',
-    mobile: '',
-    email: '',
+    organisation: '',
+    mob_number: '',
+    email_id: '',
     comments: ''
   },
   isSubmitClicked: false
@@ -54,34 +54,13 @@ class OrganizationRegistration extends React.Component {
 
   isSubmitDisabled() {
     const {organisation, isSubmitClicked} = this.state;
-    return isSubmitClicked || !organisation.name || !organisation.organisationName || !organisation.mobile || !organisation.email;
+    return isSubmitClicked || !organisation.name || !organisation.organisation || !organisation.mob_number || !organisation.email_id;
   }
 
   submitData(event) {
     this.setState({isSubmitClicked: true});
     const {organisation} = this.state;
-    const requestOptions = {
-      method: 'POST'
-    };
-    fetch(config.orgEndpoint
-        + '?name=' + organisation.name
-        + '&organisation=' + organisation.organisationName
-        + '&mob_number=' + organisation.mobile
-        + '&email_id=' + organisation.email
-        + '&comments=' + organisation.comments,
-        requestOptions)
-    .then(response => {
-      console.log(response);
-      return response.statusText;
-    })
-    .then(data => {
-      console.log(data);
-      NotificationManager.success(data);
-    })
-    .catch(error => {
-      NotificationManager.error(error.toString());
-      this.setState({isSubmitClicked: false});
-    });
+    makeApiCall(config.orgEndpoint, 'POST', organisation);
     event.preventDefault();
   }
 
@@ -93,14 +72,14 @@ class OrganizationRegistration extends React.Component {
                              value={organisation.name}
                              onChange={e => this.updateData(e, 'name')}/>
           <FormGroupTemplate iconClass="fas fa-users" placeholder="Organization Name"
-                             value={organisation.organisationName}
-                             onChange={e => this.updateData(e, 'organisationName')}/>
+                             value={organisation.organisation}
+                             onChange={e => this.updateData(e, 'organisation')}/>
           <FormGroupTemplate iconClass="ni ni-mobile-button" placeholder="Mobile Number"
-                             value={organisation.mobile}
-                             onChange={e => this.updateData(e, 'mobile')}/>
+                             value={organisation.mob_number}
+                             onChange={e => this.updateData(e, 'mob_number')}/>
           <FormGroupTemplate iconClass="ni ni-email-83" placeholder="Email" type="email"
-                             value={organisation.email}
-                             onChange={e => this.updateData(e, 'email')}/>
+                             value={organisation.email_id}
+                             onChange={e => this.updateData(e, 'email_id')}/>
           <FormGroupTemplate iconClass="fas fa-comments" placeholder="Comments" type="textarea"
                              value={organisation.comments}
                              onChange={e => this.updateData(e, 'comments')}/>

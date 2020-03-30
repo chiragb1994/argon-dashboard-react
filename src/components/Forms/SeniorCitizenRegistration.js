@@ -25,17 +25,17 @@ import Form from "reactstrap/lib/Form";
 import FormGroupTemplate from "./FormGroupTemplate";
 import NumberFormat from 'react-number-format';
 import config from "config/config";
-import {NotificationContainer, NotificationManager} from "react-notifications";
+import {makeApiCall} from "utils/utils";
 
 const defaultData = {
   request: {
     name: '',
-    mobile: '',
+    mob_number: '',
     age: '',
     address: '',
-    comments: '',
-    lat: '',
-    long: '',
+    request: '',
+    latitude: '',
+    longitude: '',
     checked: ''
   },
   isSubmitClicked: false
@@ -60,7 +60,7 @@ class SeniorCitizenRegistration extends React.Component {
 
   isSubmitDisabled() {
     const {request, isSubmitClicked} = this.state;
-    return isSubmitClicked || !request.name || !request.mobile || !request.age || !request.address
+    return isSubmitClicked || !request.name || !request.mob_number || !request.age || !request.address
         || !request.checked;
   }
 
@@ -69,33 +69,10 @@ class SeniorCitizenRegistration extends React.Component {
     const {request} = this.state;
     const {isGeolocationAvailable, isGeolocationEnabled, coords} = this.props;
     if (isGeolocationAvailable && isGeolocationEnabled && coords) {
-      request.lat = coords.latitude;
-      request.long = coords.longitude;
+      request.latitude = coords.latitude;
+      request.longitude = coords.longitude;
     }
-    const requestOptions = {
-      method: 'POST'
-    };
-    fetch(config.requestEndpoint
-        + '?name=' + request.name
-        + '&mob_number=' + request.mobile
-        + '&age=' + request.age
-        + '&address=' + request.address
-        + '&request=' + request.comments
-        + '&latitude=' + request.lat
-        + '&longitude=' + request.long,
-        requestOptions)
-    .then(response => {
-      console.log(response);
-      return response.statusText;
-    })
-    .then(data => {
-      console.log(data);
-      NotificationManager.success(data);
-    })
-    .catch(error => {
-      NotificationManager.error(error.toString());
-      this.setState({isSubmitClicked: false});
-    });
+    makeApiCall(config.requestEndpoint, 'POST', request);
     event.preventDefault();
   }
 
@@ -124,8 +101,8 @@ class SeniorCitizenRegistration extends React.Component {
                              onChange={e => this.updateData(e, 'name')}/>
           <FormGroupTemplate iconClass="ni ni-mobile-button" placeholder="Mobile Number"
                              type="text"
-                             value={request.mobile}
-                             onChange={e => this.updateData(e, 'mobile')}/>
+                             value={request.mob_number}
+                             onChange={e => this.updateData(e, 'mob_number')}/>
           <FormGroupTemplate iconClass="fas fa-user-clock" placeholder="Age" type="text"
                              value={request.age}
                              onChange={e => this.updateData(e, 'age')}/>
@@ -135,8 +112,8 @@ class SeniorCitizenRegistration extends React.Component {
                              onChange={e => this.updateData(e, 'address')}/>
           <FormGroupTemplate iconClass="fas fa-comments" placeholder="Any Special Instructions"
                              type="textarea"
-                             value={request.comments}
-                             onChange={e => this.updateData(e, 'comments')}/>
+                             value={request.request}
+                             onChange={e => this.updateData(e, 'request')}/>
           <FormGroup>
             <InputGroup className="input-group-alternative mb-3">
               <InputGroupAddon addonType="prepend">

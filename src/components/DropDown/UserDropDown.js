@@ -17,7 +17,7 @@
 */
 /*eslint-disable*/
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 // nodejs library to set properties for components
 // reactstrap components
 import {
@@ -29,6 +29,8 @@ import {
   UncontrolledDropdown
 } from "reactstrap";
 import PropTypes from "prop-types";
+import config from "config/config";
+import {withRouter} from "react-router";
 
 class UserDropDown extends React.Component {
   constructor(props) {
@@ -37,8 +39,8 @@ class UserDropDown extends React.Component {
 
   render() {
     const {className, dropDownToggleClassName} = this.props;
-    let username = 'User';
-    let loggedIn = false;
+    const username = localStorage.getItem(config.userNameStorageKey) || 'User';
+    const loggedIn = localStorage.getItem(config.accessTypeStorageKey);
     return (
         <Nav className={className} navbar>
           <UncontrolledDropdown nav>
@@ -56,7 +58,11 @@ class UserDropDown extends React.Component {
             </DropdownToggle>
             <DropdownMenu className="dropdown-menu-arrow" right>
               {loggedIn ?
-                  (<DropdownItem href="#pablo" onClick={e => e.preventDefault()}>
+                  (<DropdownItem href="#" onClick={e => {
+                    localStorage.clear();
+                    e.preventDefault();
+                    this.props.history.push("/");
+                  }}>
                     <i className="ni ni-user-run"/>
                     <span>Logout</span>
                   </DropdownItem>)
@@ -82,4 +88,4 @@ UserDropDown.propTypes = {
   dropDownToggleClassName: PropTypes.string
 };
 
-export default UserDropDown;
+export default withRouter(UserDropDown);

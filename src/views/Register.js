@@ -17,9 +17,10 @@
 */
 import React from "react";
 // reactstrap components
-import {Button, Card, CardBody, CardHeader, Col, Container, Form, Row} from "reactstrap";
+import {Card, CardBody, CardHeader, Col, Container, Row} from "reactstrap";
 import Header from "components/Headers/Header.js";
-import FormGroupTemplate from "components/Forms/FormGroupTemplate";
+import NewUserForm from "components/Forms/NewUserForm";
+import {isSuperUser} from "utils/utils";
 
 class Register extends React.Component {
   render() {
@@ -37,18 +38,7 @@ class Register extends React.Component {
                     </div>
                   </CardHeader>
                   <CardBody className="px-lg-5 py-lg-5">
-                    <Form role="form">
-                      <FormGroupTemplate iconClass="ni ni-hat-3" placeholder="Name"/>
-                      <FormGroupTemplate iconClass="fas fa-users" placeholder="Organization Name"/>
-                      <FormGroupTemplate iconClass="ni ni-mobile-button" placeholder="Mobile Number"/>
-                      <FormGroupTemplate iconClass="ni ni-email-83" placeholder="Email" type="email"/>
-                      <FormGroupTemplate iconClass="ni ni-lock-circle-open" placeholder="Password" type="password"/>
-                      <div className="text-center">
-                        <Button className="my-4" color="primary" type="button">
-                          Create Account
-                        </Button>
-                      </div>
-                    </Form>
+                    {isSuperUser() ? <NewUserForm/> : 'You don\'t have access to this'}
                   </CardBody>
                 </Card>
               </Col>
