@@ -24,6 +24,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import "assets/scss/argon-dashboard-react.scss";
 import "assets/plugins/mapbox-gl/mapbox-gl.css";
 import "assets/css/mapbox-custom.css";
+import 'react-notifications/lib/notifications.css';
 
 import AdminLayout from "layouts/Admin.js";
 

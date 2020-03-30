@@ -65,7 +65,7 @@ class Index extends React.Component {
                 {this.getCard('Become a Volunteer', <VolunteerRegistration/>)}
               </Col>
               <Col xl="4">
-                {this.getCard('Organisations', <><p>If you are an organization and would
+                {this.getCard('Contact the admin', <><p>If you are an organization and would
                   like to be a part of the efforts in here, please drop your details here. We will
                   get back to you.</p> <OrganizationRegistration/></>)}
               </Col>

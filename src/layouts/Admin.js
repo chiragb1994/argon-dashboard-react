@@ -26,6 +26,7 @@ import Sidebar from "components/Sidebar/Sidebar.js";
 
 import routes from "routes.js";
 import ReactGA from 'react-ga';
+import {NotificationContainer} from "react-notifications";
 
 class Admin extends React.Component {
   componentDidMount() {
@@ -84,6 +85,7 @@ class Admin extends React.Component {
             <Container fluid>
               <AdminFooter/>
             </Container>
+            <NotificationContainer/>
           </div>
         </>
     );

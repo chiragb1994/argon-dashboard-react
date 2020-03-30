@@ -58,9 +58,9 @@ class Header extends React.Component {
                 {/* Card stats */}
                 {showCards ?
                     <Row>
-                      {this.getCardCol('Volunteers', 314, 'bg-danger', 'fa-chart-bar')}
-                      {this.getCardCol('Requests processed', 164, 'bg-warning', 'fa-chart-pie')}
-                      {this.getCardCol('Supporting Organizations', 7, 'bg-yellow', 'fa-users')}
+                      {this.getCardCol('Total volunteers', 314, 'bg-danger', 'fa-chart-bar')}
+                      {this.getCardCol('Total requests', 164, 'bg-warning', 'fa-chart-pie')}
+                      {this.getCardCol('Pending requests', 7, 'bg-yellow', 'fa-users')}
                     </Row>
                     : null}
               </div>

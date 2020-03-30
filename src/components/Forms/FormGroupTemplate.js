@@ -31,7 +31,7 @@ class FormGroupTemplate extends React.Component {
   }
 
   render() {
-    const {iconClass, placeholder, type} = this.props;
+    const {iconClass, placeholder, type, ...attributes} = this.props;
     return (
         <FormGroup>
           <InputGroup className="input-group-alternative mb-3">
@@ -40,7 +40,7 @@ class FormGroupTemplate extends React.Component {
                 <i className={iconClass}/>
               </InputGroupText>
             </InputGroupAddon>
-            <Input placeholder={placeholder} type={type}/>
+            <Input {...attributes} placeholder={placeholder} type={type}/>
           </InputGroup>
         </FormGroup>
     );
