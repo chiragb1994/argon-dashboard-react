@@ -44,10 +44,6 @@ import {withRouter} from "react-router";
 
 class Tables extends React.Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   getTable() {
     return (
         <>
