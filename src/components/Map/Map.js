@@ -28,8 +28,8 @@ import config from "../../config/config";
 const volunteerDataSource = 'volunteerData';
 const requestDataSource = 'requestData';
 
-const volunteerLayerId = 'poi-volunteer';
-const requestLayerId = 'poi-request';
+const volunteerLayerId = 'covid-volunteer';
+const requestLayerId = 'covid-request';
 
 class Map extends React.Component {
   constructor(props) {
@@ -323,6 +323,9 @@ class Map extends React.Component {
   setLayerVisibility() {
     const {activeNav, map} = this.state;
     map.getStyle().layers.forEach(function (layer) {
+      if (layer.id.indexOf('covid') === -1) {
+        return;
+      }
       let visibility = 'none';
       if (activeNav === 0) {
         visibility = 'visible';
