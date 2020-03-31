@@ -29,7 +29,7 @@ class Map extends React.Component {
     super(props);
     mapBoxGl.accessToken = 'pk.eyJ1IjoiY292aWQxOS1zb3MiLCJhIjoiY2s4YnF1dnZjMGR3czNscWYwNGRtbnU1aSJ9.Ju7HmRcG8xQkaI5WauDbJA';
     this.state = {
-      activeNav: 1,
+      activeNav: 0,
       map: null,
       layerIds: [],
       allData: []
@@ -142,6 +142,9 @@ class Map extends React.Component {
     const {activeNav, layerIds, map} = this.state;
     layerIds.forEach(function (layerId) {
       let visibility = 'none';
+      if (activeNav === 0) {
+        visibility = 'visible';
+      }
       if (activeNav === 1 && layerId === 'poi-volunteer') {
         visibility = 'visible';
       }
@@ -166,6 +169,18 @@ class Map extends React.Component {
               </div>
               <div className="col">
                 <Nav className="justify-content-end" pills>
+                  <NavItem>
+                    <NavLink
+                        className={classnames("py-2 px-3", {
+                          active: this.state.activeNav === 0
+                        })}
+                        href="#"
+                        onClick={e => this.toggleNavs(e, 0)}
+                    >
+                      <span className="d-none d-md-block">All</span>
+                      <span className="d-md-none">A</span>
+                    </NavLink>
+                  </NavItem>
                   <NavItem>
                     <NavLink
                         className={classnames("py-2 px-3", {

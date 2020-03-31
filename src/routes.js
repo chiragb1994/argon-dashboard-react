@@ -18,30 +18,32 @@
 import Index from "views/Index.js";
 import Register from "views/Register.js";
 import Login from "views/Login.js";
+import Tables from "views/Tables";
 
 var routes = [
   {
     path: "/login",
     name: "Login",
-    icon: "ni ni-key-25 text-info",
     component: Login
   },
   {
     path: "/register",
     name: "Register",
-    icon: "ni ni-circle-08 text-pink",
     component: Register
+  },
+  {
+    path: "/tables",
+    name: "Tables",
+    component: Tables
   },
   {
     path: "",
     name: "Dashboard",
-    icon: "ni ni-tv-2 text-primary",
     component: Index
   },
   {
     path: "/index",
     name: "Dashboard",
-    icon: "ni ni-tv-2 text-primary",
     component: Index
   },
 ];

@@ -17,40 +17,22 @@
 */
 /*eslint-disable*/
 import React from "react";
-import { NavLink as NavLinkRRD, Link } from "react-router-dom";
+import {Link, NavLink as NavLinkRRD} from "react-router-dom";
 // nodejs library to set properties for components
-import { PropTypes } from "prop-types";
+import {PropTypes} from "prop-types";
 import UserDropDown from "components/DropDown/UserDropDown.js";
-
+import config from "config/config";
 // reactstrap components
 import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
+  Col,
   Collapse,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  FormGroup,
-  Form,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
-  Media,
-  NavbarBrand,
+  Container,
+  Nav,
   Navbar,
+  NavbarBrand,
   NavItem,
   NavLink,
-  Nav,
-  Progress,
-  Table,
-  Container,
-  Row,
-  Col
+  Row
 } from "reactstrap";
 
 var ps;
@@ -59,22 +41,49 @@ class Sidebar extends React.Component {
   state = {
     collapseOpen: false
   };
+
   constructor(props) {
     super(props);
     this.activeRoute.bind(this);
   }
+
   // verifies if routeName is the one active (in browser input)
   activeRoute(routeName) {
     return this.props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
   }
+
   // toggles collapse between opened and closed (true/false)
   toggleCollapse = () => {
     this.setState({
       collapseOpen: !this.state.collapseOpen
     });
   };
+  // closes the collapse
+  closeCollapse = () => {
+    this.setState({
+      collapseOpen: false
+    });
+  };
+
+  getNavLink(path, icon, name) {
+    return (
+        <NavItem key={path}>
+          <NavLink
+              to={path}
+              tag={NavLinkRRD}
+              onClick={this.closeCollapse}
+              activeClassName="active"
+          >
+            <i className={icon}/>
+            {name}
+          </NavLink>
+        </NavItem>
+    )
+  };
+
   render() {
-    const { bgColor, routes, logo } = this.props;
+    const {logo} = this.props;
+    const loggedIn = localStorage.getItem(config.userIdStorageKey);
     let navbarBrandProps;
     if (logo && logo.innerLink) {
       navbarBrandProps = {
@@ -88,61 +97,81 @@ class Sidebar extends React.Component {
       };
     }
     return (
-      <Navbar
-        className="navbar-vertical fixed-left navbar-light bg-white"
-        expand="md"
-        id="sidenav-main"
-      >
-        <Container fluid>
-          {/* Brand */}
-          {logo ? (
-            <NavbarBrand className="pt-0" {...navbarBrandProps}>
-              <img
-                alt={logo.imgAlt}
-                className="navbar-brand-img"
-                src={logo.imgSrc}
-              />
-            </NavbarBrand>
-          ) : null}
-          {/* User */}
-          <UserDropDown className="align-items-center d-md-none"/>
-          {/* Collapse */}
-          <Collapse navbar isOpen={this.state.collapseOpen}>
-            {/* Collapse header */}
-            <div className="navbar-collapse-header d-md-none">
-              <Row>
-                {logo ? (
-                  <Col className="collapse-brand" xs="6">
-                    {logo.innerLink ? (
-                      <Link to={logo.innerLink}>
-                        <img alt={logo.imgAlt} src={logo.imgSrc} />
-                      </Link>
-                    ) : (
-                      <a href={logo.outterLink}>
-                        <img alt={logo.imgAlt} src={logo.imgSrc} />
-                      </a>
-                    )}
+        <Navbar
+            className="navbar-vertical fixed-left navbar-light bg-white"
+            expand="md"
+            id="sidenav-main"
+        >
+          <Container fluid>
+            {/* Toggler */}
+            <button
+                className="navbar-toggler"
+                type="button"
+                onClick={this.toggleCollapse}
+            >
+              <span className="navbar-toggler-icon"/>
+            </button>
+            {/* Brand */}
+            {logo ? (
+                <NavbarBrand className="pt-0" {...navbarBrandProps}>
+                  <img
+                      alt={logo.imgAlt}
+                      className="navbar-brand-img"
+                      src={logo.imgSrc}
+                  />
+                </NavbarBrand>
+            ) : null}
+            {/* User */}
+            <UserDropDown className="align-items-center d-md-none"/>
+            {/* Collapse */}
+            <Collapse navbar isOpen={this.state.collapseOpen}>
+              {/* Collapse header */}
+              <div className="navbar-collapse-header d-md-none">
+                <Row>
+                  {logo ? (
+                      <Col className="collapse-brand" xs="6">
+                        {logo.innerLink ? (
+                            <Link to={logo.innerLink}>
+                              <img alt={logo.imgAlt} src={logo.imgSrc}/>
+                            </Link>
+                        ) : (
+                            <a href={logo.outterLink}>
+                              <img alt={logo.imgAlt} src={logo.imgSrc}/>
+                            </a>
+                        )}
+                      </Col>
+                  ) : null}
+                  <Col className="collapse-close" xs="6">
+                    <button
+                        className="navbar-toggler"
+                        type="button"
+                        onClick={this.toggleCollapse}
+                    >
+                      <span/>
+                      <span/>
+                    </button>
                   </Col>
-                ) : null}
-                <Col className="collapse-close" xs="6">
-                  <button
-                    className="navbar-toggler"
-                    type="button"
-                    onClick={this.toggleCollapse}
-                  >
-                    <span />
-                    <span />
-                  </button>
-                </Col>
-              </Row>
-            </div>
-            <div className="mb-0 mt-auto">
-              <p className="font-italic">Only a life lived for others is a life worthwhile</p>
-              <p className="font-italic float-md-right">- Albert Einstein</p>
-            </div>
-          </Collapse>
-        </Container>
-      </Navbar>
+                </Row>
+              </div>
+              {/* Navigation */}
+              <Nav navbar>
+                {this.getNavLink('privacy', 'fas fa-user-shield text-orange', 'Privacy')}
+                {this.getNavLink('organizations', 'fas fa-users text-yellow',
+                    'Supporting Organizations')}
+                {
+                  loggedIn ? this.getNavLink('tables', 'ni ni-bullet-list-67 text-red',
+                      'See Tables') : null
+                }
+              </Nav>
+              {/* Divider */}
+              <hr className="my-3"/>
+              <div className="mb-0 mt-auto">
+                <p className="font-italic">Only a life lived for others is a life worthwhile</p>
+                <p className="font-italic float-md-right">- Albert Einstein</p>
+              </div>
+            </Collapse>
+          </Container>
+        </Navbar>
     );
   }
 }

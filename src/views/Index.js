@@ -24,6 +24,7 @@ import Map from "components/Map/Map.js";
 import OrganizationRegistration from "components/Forms/OrganizationRegistration.js";
 import SeniorCitizenRegistration from "components/Forms/SeniorCitizenRegistration.js";
 import VolunteerRegistration from "components/Forms/VolunteerRegistration.js";
+import config from "config/config";
 
 // core components
 
@@ -47,29 +48,38 @@ class Index extends React.Component {
   }
 
   render() {
+    const loggedIn = localStorage.getItem(config.userIdStorageKey);
     return (
         <>
           <Header/>
           {/* Page content */}
           <Container className="mt--7" fluid>
             <Row>
-              <Col className="mb-5 mb-xl-0" xl="8">
+              <Col className="mb-5 mb-xl-0"
+                   xl={loggedIn ? 12 : 8}>
                 <Map/>
               </Col>
-              <Col xl="4">
-                {this.getCard('Request Help', <SeniorCitizenRegistration/>)}
-              </Col>
+              {
+                loggedIn ? null :
+                    <Col xl="4">
+                      {this.getCard('Request Help', <SeniorCitizenRegistration/>)}
+                    </Col>
+              }
             </Row>
-            <Row className="mt-5">
-              <Col className="mb-5 mb-xl-0" xl="8">
-                {this.getCard('Become a Volunteer', <VolunteerRegistration/>)}
-              </Col>
-              <Col xl="4">
-                {this.getCard('Contact the admin', <><p>If you are an organization and would
-                  like to be a part of the efforts in here, please drop your details here. We will
-                  get back to you.</p> <OrganizationRegistration/></>)}
-              </Col>
-            </Row>
+            {
+              loggedIn ? null :
+                  <Row className="mt-5">
+                    <Col className="mb-5 mb-xl-0" xl="8">
+                      {this.getCard('Become a Volunteer', <VolunteerRegistration/>)}
+                    </Col>
+                    <Col xl="4">
+                      {this.getCard('Contact the admin', <><p>If you are an organization and would
+                        like to be a part of the efforts in here, please drop your details here. We
+                        will
+                        get back to you.</p> <OrganizationRegistration/></>)}
+                    </Col>
+                  </Row>
+            }
           </Container>
         </>
     );
