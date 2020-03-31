@@ -90,7 +90,7 @@ class Map extends React.Component {
   initiateMap() {
     const map = new mapBoxGl.Map({
       container: 'mapDiv',
-      style: 'mapbox://styles/covid19-sos/ck8cta3r11axi1io0vjnx6y7s',
+      style: 'mapbox://styles/covid19-sos/ck8g9p2qz018x1iqjl1c47zub',
       center: [79.08886, 23.373778],
       zoom: 3.25,
       attributionControl: false,
@@ -187,7 +187,7 @@ class Map extends React.Component {
   }
 
   addMapLayers(map) {
-    this.addLayers(map, volunteerLayerId, volunteerDataSource, 'volunteer', 'green');
+    this.addLayers(map, volunteerLayerId, volunteerDataSource, 'volunteer-hands', 'green');
     this.addLayers(map, requestLayerId, requestDataSource, 'old', 'red');
   }
 
