@@ -27,8 +27,8 @@ import {withRouter} from "react-router";
 
 const defaultData = {
   login: {
-    username: '9582148040', // 9582148040
-    password: 'Qwerty@12345' // Qwerty@12345
+    username: '', // 9582148040
+    password: '' // Qwerty@12345
   },
   isSubmitClicked: false
 };
