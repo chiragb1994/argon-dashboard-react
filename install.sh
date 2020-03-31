@@ -12,3 +12,4 @@ echo ""
 echo "Link: https://covidsos.thebangaloreguy.com"
 echo ""
 echo ""
+date
