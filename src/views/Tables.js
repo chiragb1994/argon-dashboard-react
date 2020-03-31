@@ -47,7 +47,7 @@ class Tables extends React.Component {
   getTable() {
     return (
         <>
-          <Header />
+          <Header showCards={false}/>
           {/* Page content */}
           <Container className="mt--7" fluid>
             {/* Table */}

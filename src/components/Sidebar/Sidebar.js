@@ -155,7 +155,7 @@ class Sidebar extends React.Component {
               </div>
               {/* Navigation */}
               <Nav navbar>
-                {this.getNavLink('privacy', 'fas fa-user-shield text-orange', 'Privacy')}
+                {this.getNavLink('information', 'fas fa-star text-orange', 'Important Information')}
                 {this.getNavLink('organizations', 'fas fa-users text-yellow',
                     'Supporting Organizations')}
                 {
