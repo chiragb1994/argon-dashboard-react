@@ -7,9 +7,11 @@ const config = {
   orgEndpoint: baseUrl + '/reachout_form',
   loginEndpoint: baseUrl + '/login',
   newUserEndpoint: baseUrl + '/new_user',
-  mapEndpoint: baseUrl + '/map',
-  mapAuthEndpoint: baseUrl + '/mapAuth',
+  summaryEndpoint: baseUrl + '/top_ticker',
+  mapEndpoint: baseUrl + '/public_map_data',
+  mapAuthEndpoint: baseUrl + '/private_map_data',
   assignEndpoint: baseUrl + '/assign',
+
   accessTypeStorageKey: 'access_level',
   userNameStorageKey: 'username',
   userIdStorageKey: 'user_id',

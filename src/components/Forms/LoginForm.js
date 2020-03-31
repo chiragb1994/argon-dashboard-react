@@ -56,6 +56,9 @@ class LoginForm extends React.Component {
   }
 
   submitData(event) {
+    if (this.isSubmitDisabled()) {
+      return;
+    }
     this.setState({isSubmitClicked: true});
     const {login} = this.state;
     makeApiCall(config.loginEndpoint, 'POST', login, (response) => {
@@ -72,7 +75,7 @@ class LoginForm extends React.Component {
   render() {
     const {login} = this.state;
     return (
-        <Form role="form">
+        <Form role="form" onSubmit={this.submitData}>
           <FormGroupTemplate iconClass="fas fa-user" placeholder="Username"
                              value={login.username}
                              onChange={e => this.updateData(e, 'username')}/>
@@ -81,9 +84,8 @@ class LoginForm extends React.Component {
                              value={login.password}
                              onChange={e => this.updateData(e, 'password')}/>
           <div className="text-center">
-            <Button className="mt-4" color="primary" type="button"
-                    disabled={this.isSubmitDisabled()}
-                    onClick={e => this.submitData(e)}>
+            <Button className="mt-4" color="primary" type="submit"
+                    disabled={this.isSubmitDisabled()}>
               Submit
             </Button>
           </div>

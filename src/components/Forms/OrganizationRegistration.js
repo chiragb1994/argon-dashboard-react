@@ -58,6 +58,9 @@ class OrganizationRegistration extends React.Component {
   }
 
   submitData(event) {
+    if (this.isSubmitDisabled()) {
+      return;
+    }
     this.setState({isSubmitClicked: true});
     const {organisation} = this.state;
     makeApiCall(config.orgEndpoint, 'POST', organisation);
@@ -67,7 +70,7 @@ class OrganizationRegistration extends React.Component {
   render() {
     const {organisation} = this.state;
     return (
-        <Form role="form">
+        <Form role="form" onSubmit={this.submitData}>
           <FormGroupTemplate iconClass="ni ni-hat-3" placeholder="Name"
                              value={organisation.name}
                              onChange={e => this.updateData(e, 'name')}/>
@@ -85,9 +88,8 @@ class OrganizationRegistration extends React.Component {
                              onChange={e => this.updateData(e, 'comments')}/>
 
           <div className="text-center">
-            <Button className="mt-4" color="primary" type="button"
-                    disabled={this.isSubmitDisabled()}
-                    onClick={e => this.submitData(e)}>
+            <Button className="mt-4" color="primary" type="submit"
+                    disabled={this.isSubmitDisabled()}>
               Submit
             </Button>
           </div>

@@ -1,7 +1,7 @@
 import {NotificationManager} from "react-notifications";
 import config from "../config/config";
 
-export const makeApiCall = (url, method, data, successCb = null) => {
+export const makeApiCall = (url, method, data, successCb = null, notify = true) => {
   const formData = new FormData();
   Object.keys(data).forEach(key => formData.append(key, data[key]));
 
@@ -24,13 +24,15 @@ export const makeApiCall = (url, method, data, successCb = null) => {
     // console.log(data);
     if (data && data.Response) {
       if (data.Response.status) {
-        NotificationManager.success(data.Response.string_response);
+        if (notify) {
+          NotificationManager.success(data.Response.string_response || 'Success');
+        }
         if (successCb) {
           successCb(data.Response);
         }
       }
       else {
-        NotificationManager.error(data.Response.string_response);
+        NotificationManager.error(data.Response.string_response || 'API Failure');
       }
     }
     else {

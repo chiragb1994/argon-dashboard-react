@@ -64,6 +64,9 @@ class VolunteerRegistration extends React.Component {
   }
 
   submitData(event) {
+    if (this.isSubmitDisabled()) {
+      return;
+    }
     this.setState({isSubmitClicked: true});
     const {volunteer} = this.state;
     const {isGeolocationAvailable, isGeolocationEnabled, coords} = this.props;
@@ -94,7 +97,7 @@ class VolunteerRegistration extends React.Component {
   render() {
     const {volunteer} = this.state;
     return (
-        <Form role="form">
+        <Form role="form" onSubmit={this.submitData}>
           <FormGroupTemplate iconClass="ni ni-hat-3" placeholder="Full Name"
                              value={volunteer.name}
                              onChange={e => this.updateData(e, 'name')}/>
@@ -131,9 +134,8 @@ class VolunteerRegistration extends React.Component {
             </label>
           </div>
           <div className="text-center">
-            <Button className="mt-4" color="primary" type="button"
-                    disabled={this.isSubmitDisabled()}
-                    onClick={e => this.submitData(e)}>
+            <Button className="mt-4" color="primary" type="submit"
+                    disabled={this.isSubmitDisabled()}>
               Submit
             </Button>
           </div>

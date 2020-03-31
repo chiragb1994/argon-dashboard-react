@@ -20,8 +20,29 @@ import NumberFormat from 'react-number-format';
 // reactstrap components
 import {Card, CardBody, Col, Container, Row} from "reactstrap";
 import PropTypes from "prop-types";
+import config from "config/config";
+import {makeApiCall} from "../../utils/utils";
 
 class Header extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {volunteer_count: 0, request_count: 0, pending_request_count: 0};
+    this.getData();
+  }
+
+  getData() {
+    if (!this.props.showCards) {
+      return;
+    }
+    makeApiCall(config.summaryEndpoint, 'POST', {}, (response) => {
+      this.setState({
+        volunteer_count: response.volunteer_count,
+        request_count: response.request_count,
+        pending_request_count: response.pending_request_count
+      });
+    }, false);
+  }
 
   getCardCol(title, count, iconBg, iconClass) {
     return (
@@ -58,9 +79,12 @@ class Header extends React.Component {
                 {/* Card stats */}
                 {showCards ?
                     <Row>
-                      {this.getCardCol('Total volunteers', 314, 'bg-danger', 'fa-chart-bar')}
-                      {this.getCardCol('Total requests', 164, 'bg-warning', 'fa-chart-pie')}
-                      {this.getCardCol('Pending requests', 7, 'bg-yellow', 'fa-users')}
+                      {this.getCardCol('Total volunteers', this.state.volunteer_count,
+                          'bg-danger', 'fa-chart-bar')}
+                      {this.getCardCol('Total requests', this.state.request_count, 'bg-warning',
+                          'fa-chart-pie')}
+                      {this.getCardCol('Pending requests', this.state.pending_request_count,
+                          'bg-yellow', 'fa-users')}
                     </Row>
                     : null}
               </div>

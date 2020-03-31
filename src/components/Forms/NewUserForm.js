@@ -62,6 +62,9 @@ class NewUserForm extends React.Component {
   }
 
   submitData(event) {
+    if (this.isSubmitDisabled()) {
+      return;
+    }
     this.setState({isSubmitClicked: true});
     const {user} = this.state;
     user.creator_access_type = localStorage.getItem(config.accessTypeStorageKey);
@@ -85,7 +88,7 @@ class NewUserForm extends React.Component {
         //     </Button>
         //   </div>
         // </Form>
-        <Form role="form">
+        <Form role="form" onSubmit={this.submitData}>
           <FormGroupTemplate iconClass="fas fa-user" placeholder="Name"
                              value={user.name}
                              onChange={e => this.updateData(e, 'name')}/>
@@ -106,34 +109,33 @@ class NewUserForm extends React.Component {
 
           <div className="custom-control custom-control-alternative custom-radio d-flex">
             <div className="col-6">
-            <input
-                className="custom-control-input"
-                id="viewerAccessType"
-                type="radio"
-                value="viewer"
-                name="user_access_type"
-                onClick={e => this.updateData(e, 'user_access_type')}/>
-            <label className="custom-control-label" htmlFor="viewerAccessType">
-              <span className="text-muted">Viewer</span>
-            </label>
+              <input
+                  className="custom-control-input"
+                  id="viewerAccessType"
+                  type="radio"
+                  value="viewer"
+                  name="user_access_type"
+                  onClick={e => this.updateData(e, 'user_access_type')}/>
+              <label className="custom-control-label" htmlFor="viewerAccessType">
+                <span className="text-muted">Viewer</span>
+              </label>
             </div>
             <div className="col-6">
-            <input
-                className="custom-control-input"
-                id="moderatorAccessType"
-                type="radio"
-                value="moderator"
-                name="user_access_type"
-                onClick={e => this.updateData(e, 'user_access_type')}/>
-            <label className="custom-control-label" htmlFor="moderatorAccessType">
-              <span className="text-muted">Moderator</span>
-            </label>
+              <input
+                  className="custom-control-input"
+                  id="moderatorAccessType"
+                  type="radio"
+                  value="moderator"
+                  name="user_access_type"
+                  onClick={e => this.updateData(e, 'user_access_type')}/>
+              <label className="custom-control-label" htmlFor="moderatorAccessType">
+                <span className="text-muted">Moderator</span>
+              </label>
             </div>
           </div>
           <div className="text-center">
-            <Button className="mt-4" color="primary" type="button"
-                    disabled={this.isSubmitDisabled()}
-                    onClick={e => this.submitData(e)}>
+            <Button className="mt-4" color="primary" type="submit"
+                    disabled={this.isSubmitDisabled()}>
               Submit
             </Button>
           </div>
