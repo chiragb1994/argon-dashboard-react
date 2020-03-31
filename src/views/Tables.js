@@ -16,877 +16,351 @@
 
 */
 import React from "react";
-
 // reactstrap components
 import {
-  Badge,
   Card,
-  CardHeader,
   CardFooter,
-  DropdownMenu,
+  CardHeader,
+  Container,
   DropdownItem,
-  UncontrolledDropdown,
+  DropdownMenu,
   DropdownToggle,
-  Media,
+  Form,
   Pagination,
   PaginationItem,
   PaginationLink,
-  Progress,
-  Table,
-  Container,
   Row,
-  UncontrolledTooltip
+  Table,
+  UncontrolledDropdown,
+  FormGroup,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Input,
+  Col
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
 import config from "config/config";
 import {withRouter} from "react-router";
+import {makeApiCall} from "../utils/utils";
+
+const tableConfigMap = {
+  requests: {
+    key: 'requests',
+    title: 'Requests',
+    fieldHeaders: [
+      'Name',
+      'Mobile',
+      'Address',
+      'Request',
+      'Age',
+      'Status'
+    ],
+    fieldKeys: [
+      'name',
+      'mob_number',
+      'address',
+      'request',
+      'age',
+      'status'
+    ],
+    pageSize: 10,
+    actions: [{
+      key: 'assign',
+      name: 'Assign a volunteer'
+    }, {
+      key: 'change_status',
+      name: 'Change Status'
+    }]
+  },
+  volunteers: {
+    key: 'volunteers',
+    title: 'Volunteers',
+    fieldHeaders: [
+      'Name',
+      'Mobile',
+      'Email',
+      'Address',
+      'Status'
+    ],
+    fieldKeys: [
+      'name',
+      'mob_number',
+      'email_id',
+      'address',
+      'status'
+    ],
+    pageSize: 10,
+    actions: [{
+      key: 'update_info',
+      name: 'Update Info'
+    }, {
+      key: 'activate_deactivate',
+      name: 'Activate/Deactivate'
+    }]
+  }
+};
 
 class Tables extends React.Component {
 
-  getTable() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currState: {
+        requests: {
+          data: [],
+          filteredData: [],
+          currPage: 1,
+          searchString: ''
+        },
+        volunteers: {
+          data: [],
+          filteredData: [],
+          currPage: 1,
+          searchString: ''
+        }
+      }
+    };
+    if (!localStorage.getItem(config.userIdStorageKey)) {
+      this.props.history.push("/");
+    }
+    this.getData();
+    this.search = this.search.bind(this);
+  }
+
+  getData() {
+    makeApiCall(config.mapAuthEndpoint, 'POST',
+        {user_id: localStorage.getItem(config.userIdStorageKey)},
+        (response) => {
+          this.setState({
+            currState: {
+              requests: {
+                data: response.Requests,
+                filteredData: response.Requests,
+                currPage: 1,
+                searchString: ''
+              },
+              volunteers: {
+                data: response.Volunteers,
+                filteredData: response.Volunteers,
+                currPage: 1,
+                searchString: ''
+              }
+            }
+          });
+        }, false);
+  }
+
+  search(event, tableConfig) {
+    const {currState} = this.state;
+    const searchString = event.target.value;
+    currState[tableConfig.key].searchString = searchString;
+    currState[tableConfig.key].filteredData = currState[tableConfig.key].data.filter(row => {
+      let keepRow = false;
+      tableConfig.fieldKeys.forEach(fk => {
+        if (row[fk].toString().toLowerCase().indexOf(searchString.toLowerCase()) !== -1) {
+          keepRow = true;
+        }
+      });
+      return keepRow;
+    });
+    currState[tableConfig.key].currPage = 1;
+    this.setState({currState: currState});
+  }
+
+  getDropDown(tableConfig, rowData) {
+    return (
+        <UncontrolledDropdown>
+          <DropdownToggle
+              className="btn-icon-only text-light"
+              href="#"
+              role="button"
+              color=""
+              onClick={e => e.preventDefault()}>
+            <i className="fas fa-ellipsis-h"/>
+          </DropdownToggle>
+          <DropdownMenu className="dropdown-menu-arrow" right>
+            {
+              tableConfig.actions.map(action => {
+                return (
+                    <DropdownItem href="#" key={action.key + '_' + (rowData.r_id || rowData.v_id)}
+                                  onClick={e => {
+                                    this.takeAction(action, rowData);
+                                    e.preventDefault();
+                                  }}>
+                      {action.name}
+                    </DropdownItem>
+                );
+              })
+            }
+          </DropdownMenu>
+        </UncontrolledDropdown>
+    );
+  }
+
+  getRows(tableConfig) {
+    const {currState} = this.state;
+    const currTableState = currState[tableConfig.key];
+    if (currTableState.filteredData.length === 0) {
+      return null;
+    }
+    let startNumber = (currTableState.currPage - 1) * tableConfig.pageSize;
+    let endNumber = Math.min(startNumber + tableConfig.pageSize,
+        currTableState.filteredData.length);
+    const dataToReturn = [];
+    for (let i = startNumber; i < endNumber; i++) {
+      let currRowData = currTableState.filteredData[i];
+      dataToReturn.push(<tr key={tableConfig.key + '_' + i}>
+        <td key={tableConfig.key + '_' + i + ')s_no'}>{i + 1}</td>
+        {
+          tableConfig.fieldKeys.map(k => {
+            return (<td key={tableConfig.key + '_' + i + '_' + k}>{currRowData[k]}</td>)
+          })
+        }
+        <td key={tableConfig.key + '_' + i + '_action'}>
+          {this.getDropDown(tableConfig, currRowData)}
+        </td>
+      </tr>);
+    }
+    return dataToReturn;
+  }
+
+  getNavigationPageNums(tableConfig) {
+    const {currState} = this.state;
+    const currTableState = currState[tableConfig.key];
+    let startPage = Math.max(currTableState.currPage - 2, 1);
+    let endPage = Math.min(startPage + 4, Math.ceil(
+        currTableState.filteredData.length / tableConfig.pageSize));
+    const dataToReturn = [];
+    for (let i = startPage; i <= endPage; i++) {
+      dataToReturn.push(
+          <PaginationItem key={tableConfig.key + '_nav_' + i} className={currTableState.currPage === i ? 'active' : ''}>
+            <PaginationLink href="#" onClick={e => {
+              currState[tableConfig.key].currPage = i;
+              this.setState({currState: currState});
+              e.preventDefault();
+            }}>
+              {i}
+            </PaginationLink>
+          </PaginationItem>);
+    }
+    return dataToReturn;
+  }
+
+  getNavigation(tableConfig) {
+    const {currState} = this.state;
+    const currTableState = currState[tableConfig.key];
+    return (
+        <nav>
+          <Pagination
+              className="pagination justify-content-end mb-0"
+              listClassName="justify-content-end mb-0">
+            <PaginationItem className="disabled">
+              <PaginationLink
+                  href="#"
+                  onClick={e => {
+                    if (currTableState.currPage > 1) {
+                      currState[tableConfig.key].currPage = currTableState.currPage - 1;
+                      this.setState({currState: currState});
+                    }
+                    e.preventDefault();
+                  }}>
+                <i className="fas fa-angle-left"/>
+                <span className="sr-only">Previous</span>
+              </PaginationLink>
+            </PaginationItem>
+            {this.getNavigationPageNums(tableConfig)}
+
+            <PaginationItem>
+              <PaginationLink href="#" onClick={e => {
+                if (currTableState.currPage < Math.ceil(
+                    currTableState.filteredData.length / tableConfig.pageSize)) {
+                  currState[tableConfig.key].currPage = currTableState.currPage + 1;
+                  this.setState({currState: currState});
+                }
+                e.preventDefault();
+              }}>
+                <i className="fas fa-angle-right"/>
+                <span className="sr-only">Next</span>
+              </PaginationLink>
+            </PaginationItem>
+          </Pagination>
+        </nav>
+    );
+  }
+
+  getTable(tableConfig) {
+    return (
+        <Col>
+          <Card className="shadow">
+            <CardHeader className="border-0">
+              <h3 className="mb-3 d-inline-block col-sm-4">
+                {tableConfig.title} ({this.state.currState[tableConfig.key].filteredData.length})
+              </h3>
+              <Form inline className="navbar-search d-inline-block ml-auto col-sm-8"
+                    onSubmit={e => e.preventDefault()}>
+                <FormGroup>
+                  <InputGroup className="input-group-alternative mr-0 ml-auto">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="fas fa-search"/>
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input placeholder="Search" type="text"
+                           value={this.state.currState[tableConfig.key].searchString}
+                           onChange={e => this.search(e, tableConfig)}/>
+                  </InputGroup>
+                </FormGroup>
+              </Form>
+            </CardHeader>
+            <Table className="align-items-center table-flush" responsive>
+              <thead className="thead-light">
+              <tr>
+                <th scope="col">S.No.</th>
+                {
+                  tableConfig.fieldHeaders.map(fh => {
+                    return (
+                        <th scope="col" key={tableConfig.key + '_' + fh}>{fh}</th>
+                    );
+                  })
+                }
+                <th scope="col">Action</th>
+              </tr>
+              </thead>
+              <tbody>{this.getRows(tableConfig)}</tbody>
+            </Table>
+            <CardFooter className="py-4">
+              {this.getNavigation(tableConfig)}
+            </CardFooter>
+          </Card>
+        </Col>
+    );
+  }
+
+  render() {
+    if (!localStorage.getItem(config.userIdStorageKey)) {
+      this.props.history.push("/");
+      return null;
+    }
     return (
         <>
           <Header showCards={false}/>
           {/* Page content */}
           <Container className="mt--7" fluid>
-            {/* Table */}
             <Row>
-              <div className="col">
-                <Card className="shadow">
-                  <CardHeader className="border-0">
-                    <h3 className="mb-0">Card tables</h3>
-                  </CardHeader>
-                  <Table className="align-items-center table-flush" responsive>
-                    <thead className="thead-light">
-                    <tr>
-                      <th scope="col">Project</th>
-                      <th scope="col">Budget</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Users</th>
-                      <th scope="col">Completion</th>
-                      <th scope="col" />
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                      <th scope="row">
-                        <Media className="align-items-center">
-                          <a
-                              className="avatar rounded-circle mr-3"
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <Media>
-                            <span className="mb-0 text-sm">
-                              Argon Design System
-                            </span>
-                          </Media>
-                        </Media>
-                      </th>
-                      <td>$2,500 USD</td>
-                      <td>
-                        <Badge color="" className="badge-dot mr-4">
-                          <i className="bg-warning" />
-                          pending
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="avatar-group">
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip742438047"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip742438047"
-                          >
-                            Ryan Tompson
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip941738690"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip941738690"
-                          >
-                            Romina Hadid
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip804044742"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip804044742"
-                          >
-                            Alexander Smith
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip996637554"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip996637554"
-                          >
-                            Jessica Doe
-                          </UncontrolledTooltip>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">60%</span>
-                          <div>
-                            <Progress
-                                max="100"
-                                value="60"
-                                barClassName="bg-danger"
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="text-right">
-                        <UncontrolledDropdown>
-                          <DropdownToggle
-                              className="btn-icon-only text-light"
-                              href="#"
-                              role="button"
-                              size="sm"
-                              color=""
-                              onClick={e => e.preventDefault()}
-                          >
-                            <i className="fas fa-ellipsis-v" />
-                          </DropdownToggle>
-                          <DropdownMenu className="dropdown-menu-arrow" right>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Another action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Something else here
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">
-                        <Media className="align-items-center">
-                          <a
-                              className="avatar rounded-circle mr-3"
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <Media>
-                            <span className="mb-0 text-sm">
-                              Angular Now UI Kit PRO
-                            </span>
-                          </Media>
-                        </Media>
-                      </th>
-                      <td>$1,800 USD</td>
-                      <td>
-                        <Badge color="" className="badge-dot">
-                          <i className="bg-success" />
-                          completed
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="avatar-group">
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip746418347"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip746418347"
-                          >
-                            Ryan Tompson
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip102182364"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip102182364"
-                          >
-                            Romina Hadid
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip406489510"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip406489510"
-                          >
-                            Alexander Smith
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip476840018"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip476840018"
-                          >
-                            Jessica Doe
-                          </UncontrolledTooltip>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">100%</span>
-                          <div>
-                            <Progress
-                                max="100"
-                                value="100"
-                                barClassName="bg-success"
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="text-right">
-                        <UncontrolledDropdown>
-                          <DropdownToggle
-                              className="btn-icon-only text-light"
-                              href="#"
-                              role="button"
-                              size="sm"
-                              color=""
-                              onClick={e => e.preventDefault()}
-                          >
-                            <i className="fas fa-ellipsis-v" />
-                          </DropdownToggle>
-                          <DropdownMenu className="dropdown-menu-arrow" right>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Another action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Something else here
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">
-                        <Media className="align-items-center">
-                          <a
-                              className="avatar rounded-circle mr-3"
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <Media>
-                            <span className="mb-0 text-sm">
-                              Black Dashboard
-                            </span>
-                          </Media>
-                        </Media>
-                      </th>
-                      <td>$3,150 USD</td>
-                      <td>
-                        <Badge color="" className="badge-dot mr-4">
-                          <i className="bg-danger" />
-                          delayed
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="avatar-group">
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip753056318"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip753056318"
-                          >
-                            Ryan Tompson
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip441753266"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip441753266"
-                          >
-                            Romina Hadid
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip188462246"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip188462246"
-                          >
-                            Alexander Smith
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip621168444"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip621168444"
-                          >
-                            Jessica Doe
-                          </UncontrolledTooltip>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">72%</span>
-                          <div>
-                            <Progress
-                                max="100"
-                                value="72"
-                                barClassName="bg-danger"
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="text-right">
-                        <UncontrolledDropdown>
-                          <DropdownToggle
-                              className="btn-icon-only text-light"
-                              href="#"
-                              role="button"
-                              size="sm"
-                              color=""
-                              onClick={e => e.preventDefault()}
-                          >
-                            <i className="fas fa-ellipsis-v" />
-                          </DropdownToggle>
-                          <DropdownMenu className="dropdown-menu-arrow" right>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Another action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Something else here
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">
-                        <Media className="align-items-center">
-                          <a
-                              className="avatar rounded-circle mr-3"
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <Media>
-                            <span className="mb-0 text-sm">
-                              React Material Dashboard
-                            </span>
-                          </Media>
-                        </Media>
-                      </th>
-                      <td>$4,400 USD</td>
-                      <td>
-                        <Badge color="" className="badge-dot">
-                          <i className="bg-info" />
-                          on schedule
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="avatar-group">
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip875258217"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip875258217"
-                          >
-                            Ryan Tompson
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip834416663"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip834416663"
-                          >
-                            Romina Hadid
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip372449339"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip372449339"
-                          >
-                            Alexander Smith
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip108714769"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip108714769"
-                          >
-                            Jessica Doe
-                          </UncontrolledTooltip>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">90%</span>
-                          <div>
-                            <Progress
-                                max="100"
-                                value="90"
-                                barClassName="bg-info"
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="text-right">
-                        <UncontrolledDropdown>
-                          <DropdownToggle
-                              className="btn-icon-only text-light"
-                              href="#"
-                              role="button"
-                              size="sm"
-                              color=""
-                              onClick={e => e.preventDefault()}
-                          >
-                            <i className="fas fa-ellipsis-v" />
-                          </DropdownToggle>
-                          <DropdownMenu className="dropdown-menu-arrow" right>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Another action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Something else here
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">
-                        <Media className="align-items-center">
-                          <a
-                              className="avatar rounded-circle mr-3"
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <Media>
-                            <span className="mb-0 text-sm">
-                              Vue Paper UI Kit PRO
-                            </span>
-                          </Media>
-                        </Media>
-                      </th>
-                      <td>$2,200 USD</td>
-                      <td>
-                        <Badge color="" className="badge-dot mr-4">
-                          <i className="bg-success" />
-                          completed
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="avatar-group">
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip664029969"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip664029969"
-                          >
-                            Ryan Tompson
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip806693074"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip806693074"
-                          >
-                            Romina Hadid
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip844096937"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip844096937"
-                          >
-                            Alexander Smith
-                          </UncontrolledTooltip>
-                          <a
-                              className="avatar avatar-sm"
-                              href="#"
-                              id="tooltip757459971"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <img
-                                alt="..."
-                                className="rounded-circle"
-                                src={require("assets/img/icons/common/google.svg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                              delay={0}
-                              target="tooltip757459971"
-                          >
-                            Jessica Doe
-                          </UncontrolledTooltip>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">100%</span>
-                          <div>
-                            <Progress
-                                max="100"
-                                value="100"
-                                barClassName="bg-success"
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="text-right">
-                        <UncontrolledDropdown>
-                          <DropdownToggle
-                              className="btn-icon-only text-light"
-                              href="#"
-                              role="button"
-                              size="sm"
-                              color=""
-                              onClick={e => e.preventDefault()}
-                          >
-                            <i className="fas fa-ellipsis-v" />
-                          </DropdownToggle>
-                          <DropdownMenu className="dropdown-menu-arrow" right>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Another action
-                            </DropdownItem>
-                            <DropdownItem
-                                href="#"
-                                onClick={e => e.preventDefault()}
-                            >
-                              Something else here
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </Table>
-                  <CardFooter className="py-4">
-                    <nav aria-label="...">
-                      <Pagination
-                          className="pagination justify-content-end mb-0"
-                          listClassName="justify-content-end mb-0"
-                      >
-                        <PaginationItem className="disabled">
-                          <PaginationLink
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                              tabIndex="-1"
-                          >
-                            <i className="fas fa-angle-left" />
-                            <span className="sr-only">Previous</span>
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem className="active">
-                          <PaginationLink
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                          >
-                            1
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                          >
-                            2 <span className="sr-only">(current)</span>
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                          >
-                            3
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink
-                              href="#"
-                              onClick={e => e.preventDefault()}
-                          >
-                            <i className="fas fa-angle-right" />
-                            <span className="sr-only">Next</span>
-                          </PaginationLink>
-                        </PaginationItem>
-                      </Pagination>
-                    </nav>
-                  </CardFooter>
-                </Card>
-              </div>
+              {this.getTable(tableConfigMap.requests)}
+            </Row>
+            <Row className="mt-5">
+              {this.getTable(tableConfigMap.volunteers)}
             </Row>
           </Container>
         </>
     );
   }
 
-  render() {
-    if (localStorage.getItem(config.userIdStorageKey)) {
-      return this.getTable();
-    }
-    this.props.history.push("/");
-    return null;
+  takeAction(action, rowData) {
+    console.log(action, rowData);
   }
 }
 

@@ -14,6 +14,7 @@ const config = {
 
   accessTypeStorageKey: 'access_level',
   userNameStorageKey: 'username',
+  fullNameStorageKey: 'full_name',
   userIdStorageKey: 'user_id',
   superuserAccessKey: 'superuser',
 };

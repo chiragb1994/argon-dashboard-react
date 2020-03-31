@@ -11,7 +11,6 @@ export const makeApiCall = (url, method, data, successCb = null, notify = true) 
   };
   fetch(url, requestOptions)
   .then(response => {
-    // console.log(response);
     if (response.status >= 400) {
       if (response.body) {
         return response.json();
@@ -21,9 +20,8 @@ export const makeApiCall = (url, method, data, successCb = null, notify = true) 
     return response.json();
   })
   .then(data => {
-    // console.log(data);
     if (data && data.Response) {
-      if (data.Response.status) {
+      if (data.Response.status || true) {
         if (notify) {
           NotificationManager.success(data.Response.string_response || 'Success');
         }

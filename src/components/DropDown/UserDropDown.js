@@ -39,7 +39,7 @@ class UserDropDown extends React.Component {
 
   render() {
     const {className, dropDownToggleClassName} = this.props;
-    const username = localStorage.getItem(config.userNameStorageKey) || 'User';
+    const username = localStorage.getItem(config.fullNameStorageKey) || 'User';
     const loggedIn = localStorage.getItem(config.accessTypeStorageKey);
     return (
         <Nav className={className} navbar>
