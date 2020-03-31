@@ -18,11 +18,18 @@
 import React from "react";
 // react plugin used to create maps
 import mapBoxGl from "mapbox-gl";
-import data from "./data.json";
 import {Card, CardBody, CardHeader, Nav, NavItem, NavLink, Row} from "reactstrap";
 import classnames from "classnames";
+import {makeApiCall} from "../../utils/utils";
+import config from "../../config/config";
 // reactstrap components
 // core components
+
+const volunteerDataSource = 'volunteerData';
+const requestDataSource = 'requestData';
+
+const volunteerLayerId = 'poi-volunteer';
+const requestLayerId = 'poi-request';
 
 class Map extends React.Component {
   constructor(props) {
@@ -31,8 +38,14 @@ class Map extends React.Component {
     this.state = {
       activeNav: 0,
       map: null,
-      layerIds: [],
-      allData: []
+      volunteerData: {
+        type: "FeatureCollection",
+        features: []
+      },
+      requestData: {
+        type: "FeatureCollection",
+        features: []
+      }
     };
   }
 
@@ -42,20 +55,34 @@ class Map extends React.Component {
   };
 
   componentDidMount() {
-    this.updateData();
+    this.getData();
     this.initiateMap();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (!prevState.map && this.state.map) {
-      this.createSource(this.state.map, this.state.allData);
-      this.state.map.on("load", () => this.addMapLayers(this.state.map, this.state.allData));
+      this.createSource(this.state.map, this.state.volunteerData, this.state.requestData);
+      this.state.map.on("load", () => this.addMapLayers(this.state.map));
     }
+    const isMapLoaded = this.state.map && this.state.map.loaded();
+    const isLoadingComplete = prevState.isLoading && this.state.isLoaded;
+    const wasMapPreviouslyNotLoaded = !prevState.map || !prevState.map.loaded();
+    const dataChanged =
+        (prevState.volunteerData.features.length !== this.state.volunteerData.features.length) ||
+        (prevState.requestData.features.length !== this.state.requestData.features.length);
     if (
-        (!prevState.layerIds && this.state.layerIds) ||
-        prevState.layerIds !== this.state.layerIds ||
-        prevState.activeNav !== this.state.activeNav
+        isMapLoaded &&
+        (isLoadingComplete || wasMapPreviouslyNotLoaded || dataChanged)
     ) {
+      // update source
+      this.state.map
+      .getSource(volunteerDataSource)
+      .setData(this.state.volunteerData);
+      this.state.map
+      .getSource(requestDataSource)
+      .setData(this.state.requestData);
+    }
+    if (prevState.activeNav !== this.state.activeNav) {
       this.setLayerVisibility();
     }
   }
@@ -85,74 +112,229 @@ class Map extends React.Component {
     this.setState({map: map});
   }
 
-  updateData() {
-    const features = data.data.map(d => {
-      return {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [d.lon, d.lat]
-        },
-        properties: d
-      };
-    });
-    this.setState({
-      allData: {
-        type: "FeatureCollection",
-        features
-      }
-    });
+  getData() {
+    let url = config.mapEndpoint;
+    let requestData = {};
+    if (localStorage.getItem(config.userIdStorageKey)) {
+      url = config.mapAuthEndpoint;
+      requestData = {user_id: localStorage.getItem(config.userIdStorageKey)};
+    }
+    makeApiCall(url, 'POST',
+        requestData,
+        (response) => {
+          const requestDataFeatures = response.Requests.map(req => {
+            req.type = 'REQUEST';
+            return {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [req.longitude, req.latitude]
+              },
+              properties: req
+            };
+          });
+          const volunteerDataFeatures = response.Volunteers.map(vol => {
+            vol.type = 'VOLUNTEER';
+            return {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [vol.longitude, vol.latitude]
+              },
+              properties: vol
+            };
+          });
+          this.setState({
+            requestData: {
+              type: "FeatureCollection",
+              features: requestDataFeatures
+            },
+            volunteerData: {
+              type: "FeatureCollection",
+              features: volunteerDataFeatures
+            }
+          });
+        }, false);
   }
 
-  createSource(map, allData) {
-    map.on("load", () => {
-      map.addSource('allData', {
-        'type': 'geojson',
-        'data': allData
+  createSource(map, volunteerData, requestData) {
+    const clusterProperties = {
+      type: ["coalesce", ["get", 'type']]
+    };
+    const volunteerDataSourceConfig = {
+      type: 'geojson',
+      data: volunteerData,
+      cluster: true,
+      clusterRadius: 20,
+      clusterProperties
+    };
+    const requestDataSourceConfig = {
+      type: 'geojson',
+      data: requestData,
+      cluster: true,
+      clusterRadius: 20,
+      clusterProperties
+    };
+    if (map.loaded()) {
+      map.addSource(volunteerDataSource, volunteerDataSourceConfig);
+      map.addSource(requestDataSource, requestDataSourceConfig);
+    } else {
+      map.on("load", () => {
+        map.addSource(volunteerDataSource, volunteerDataSourceConfig);
+        map.addSource(requestDataSource, requestDataSourceConfig);
       });
-    });
+    }
   }
 
-  addMapLayers(map, allData) {
-    let layerIds = [];
-    allData.features.forEach(function (feature) {
-      const type = feature.properties['type'];
-      const layerId = 'poi-' + type.toLowerCase();
+  addMapLayers(map) {
+    this.addLayers(map, volunteerLayerId, volunteerDataSource, 'volunteer', 'green');
+    this.addLayers(map, requestLayerId, requestDataSource, 'old', 'red');
+  }
 
-      if (!map.getLayer(layerId)) {
-        map.addLayer({
-          'id': layerId,
-          'type': 'symbol',
-          'source': 'allData',
-          'layout': {
-            'icon-image': type === 'VOLUNTEER' ? 'volunteer' : 'old',
-            'icon-size': 0.07,
-            'icon-allow-overlap': true
-          },
-          'filter': ['==', 'type', type]
-        });
+  addLayers(map, layerId, dataSource, icon, circleColor) {
 
-        layerIds.push(layerId);
+    map.addLayer({
+      id: layerId,
+      type: 'symbol',
+      source: dataSource,
+      layout: {
+        'icon-image': icon,
+        'icon-size': 0.07,
+        'icon-allow-overlap': true
+      },
+      filter: ['!has', 'point_count']
+    });
+
+    const layerIdCluster = layerId + '-cluster';
+    const layerIdClusterCount = layerIdCluster + '-count';
+
+    map.addLayer({
+      id: layerIdCluster,
+      type: 'circle',
+      source: dataSource,
+      paint: {
+        'circle-color': circleColor,
+        'circle-radius': [
+          'step',
+          ['get', 'point_count'],
+          10,
+          100,
+          20,
+          750,
+          30
+        ],
+        'circle-opacity' : 0.5
+      },
+      filter: ['has', 'point_count']
+    });
+
+    map.addLayer({
+      id: layerIdClusterCount,
+      type: 'symbol',
+      source: dataSource,
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}',
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 12
       }
     });
-    this.setState({layerIds: layerIds});
+
+    map.on('click', layerIdCluster, function (e) {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: [layerIdCluster]
+      });
+      const clusterId = features[0].properties.cluster_id;
+      map.getSource(dataSource).getClusterExpansionZoom(
+          clusterId,
+          function (err, zoom) {
+            if (err) {
+              return;
+            }
+            map.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom: zoom
+            });
+          }
+      );
+    });
+    map.on('mouseenter', layerIdCluster, e => {
+      map.getCanvas().style.cursor = 'pointer';
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: [layerIdCluster]
+      });
+      const coordinates = features[0].geometry.coordinates.slice();
+      const { properties } = features[0];
+      const descriptionHtml = '<strong>Type</strong>: ' + properties.type + '<br/><strong>Count</strong>:' + properties.point_count;
+
+      // Ensure that if the map is zoomed out such that multiple
+      // copies of the feature are visible, the popup appears
+      // over the copy being pointed to.
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      // Populate the popup and set its coordinates
+      popup
+      .setLngLat(coordinates)
+      .setHTML(descriptionHtml)
+      .addTo(map);
+    });
+    map.on('mouseleave', layerIdCluster, function () {
+      map.getCanvas().style.cursor = '';
+      popup.remove();
+    });
+
+
+    const popup = new mapBoxGl.Popup({
+      closeButton: true,
+      closeOnClick: false
+    });
+    map.on("mouseenter", layerId, e => {
+      // Change the cursor style as a UI indicator.
+      map.getCanvas().style.cursor = "pointer";
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: [layerId]
+      });
+      const coordinates = features[0].geometry.coordinates.slice();
+      const { properties } = features[0];
+      const descriptionHtml = '<strong>Name</strong>: ' + properties.name + '<br/><strong>Type</strong>: ' + properties.type;
+
+      // Ensure that if the map is zoomed out such that multiple
+      // copies of the feature are visible, the popup appears
+      // over the copy being pointed to.
+      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      // Populate the popup and set its coordinates
+      popup
+      .setLngLat(coordinates)
+      .setHTML(descriptionHtml)
+      .addTo(map);
+    });
+
+    map.on("mouseleave", layerId, () => {
+      map.getCanvas().style.cursor = "";
+      popup.remove();
+    });
   }
 
   setLayerVisibility() {
-    const {activeNav, layerIds, map} = this.state;
-    layerIds.forEach(function (layerId) {
+    const {activeNav, map} = this.state;
+    map.getStyle().layers.forEach(function (layer) {
       let visibility = 'none';
       if (activeNav === 0) {
         visibility = 'visible';
       }
-      if (activeNav === 1 && layerId === 'poi-volunteer') {
+      if (activeNav === 1 && layer.id.indexOf('volunteer') !== -1) {
         visibility = 'visible';
       }
-      if (activeNav === 2 && layerId === 'poi-request') {
+      if (activeNav === 2 && layer.id.indexOf('request') !== -1) {
         visibility = 'visible';
       }
       map.setLayoutProperty(
-          layerId,
+          layer.id,
           'visibility',
           visibility
       );

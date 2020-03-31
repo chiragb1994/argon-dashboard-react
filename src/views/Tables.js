@@ -125,8 +125,11 @@ class Tables extends React.Component {
     if (!localStorage.getItem(config.userIdStorageKey)) {
       this.props.history.push("/");
     }
-    this.getData();
     this.search = this.search.bind(this);
+  }
+
+  componentDidMount() {
+    this.getData();
   }
 
   getData() {
