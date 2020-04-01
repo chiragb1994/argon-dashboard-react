@@ -19,6 +19,7 @@ import Index from "views/Index.js";
 import Register from "views/Register.js";
 import Login from "views/Login.js";
 import Information from "views/Information";
+import Organisations from "views/Organisations";
 import Tables from "views/Tables";
 
 var routes = [
@@ -36,6 +37,11 @@ var routes = [
     path: "/information",
     name: "Important Information",
     component: Information
+  },
+  {
+    path: "/organisations",
+    name: "Supporting Organisations",
+    component: Organisations
   },
   {
     path: "/tables",

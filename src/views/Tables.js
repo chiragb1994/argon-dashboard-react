@@ -44,6 +44,7 @@ import Header from "components/Headers/Header.js";
 import config from "config/config";
 import {withRouter} from "react-router";
 import {makeApiCall} from "../utils/utils";
+import classnames from "classnames";
 
 const tableConfigMap = {
   requests: {
@@ -238,7 +239,10 @@ class Tables extends React.Component {
     const dataToReturn = [];
     for (let i = startPage; i <= endPage; i++) {
       dataToReturn.push(
-          <PaginationItem key={tableConfig.key + '_nav_' + i} className={currTableState.currPage === i ? 'active' : ''}>
+          <PaginationItem key={tableConfig.key + '_nav_' + i}
+                          className={classnames({
+                            active: currTableState.currPage === i
+                          })}>
             <PaginationLink href="#" onClick={e => {
               currState[tableConfig.key].currPage = i;
               this.setState({currState: currState});

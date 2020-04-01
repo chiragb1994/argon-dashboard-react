@@ -376,7 +376,7 @@ class Map extends React.Component {
                     >
                       <span className="d-none d-md-block">Volunteer</span>
                       <span className="d-md-none">
-                        <img src={require("assets/img/icons/volunteer-hands.svg")} style={{height:'1.8rem'}}/>
+                        <img alt="V" src={require("assets/img/icons/volunteer-hands.svg")} style={{height:'1.8rem'}}/>
                       </span>
                     </NavLink>
                   </NavItem>
@@ -391,7 +391,7 @@ class Map extends React.Component {
                     >
                       <span className="d-none d-md-block">Requests</span>
                       <span className="d-md-none">
-                        <img src={require("assets/img/icons/old.svg")} style={{height:'1.8rem'}}/>
+                        <img alt="R" src={require("assets/img/icons/old.svg")} style={{height:'1.8rem'}}/>
                       </span>
                     </NavLink>
                   </NavItem>

@@ -2,10 +2,14 @@
 
 npm run build
 cd build
-ssh -tt -n -i ~/.ssh/covid/covid19_sos.pem ubuntu@3.6.230.117 "rm -rf /var/www/html/*"
-scp -r -i ~/.ssh/covid/covid19_sos.pem * ubuntu@3.6.230.117:/var/www/html/
-#aws --profile covid-sos s3 rm --recursive s3://covid-sos/
-#aws --profile covid-sos s3 cp --recursive . s3://covid-sos
+tar -zcvf build.tar.gz *
+echo "---------"
+ssh -tt -n -i ~/.ssh/covid/covid19_sos.pem ubuntu@3.6.230.117 "rm -rf /var/www/html-new/*"
+scp -i ~/.ssh/covid/covid19_sos.pem build.tar.gz ubuntu@3.6.230.117:/var/www/html-new/
+ssh -tt -n -i ~/.ssh/covid/covid19_sos.pem ubuntu@3.6.230.117 "cd /var/www/html-new/ && tar -xvf build.tar.gz && rm build.tar.gz"
+echo "---------"
+ssh -tt -n -i ~/.ssh/covid/covid19_sos.pem ubuntu@3.6.230.117 "rm -rf /var/www/html/* && mv /var/www/html-new/* /var/www/html/"
+echo "---------"
 
 echo ""
 echo ""
