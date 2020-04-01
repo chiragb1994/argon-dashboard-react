@@ -20,17 +20,17 @@ export const makeApiCall = (url, method, data, successCb = null, notify = true) 
     return response.json();
   })
   .then(data => {
-    if (data && data.Response) {
-      if (data.Response.status || true) {
+    if (data) {
+      if (data.status || true) {
         if (notify) {
-          NotificationManager.success(data.Response.string_response || 'Success');
+          NotificationManager.success(data.string_response || 'Success');
         }
         if (successCb) {
           successCb(data.Response);
         }
       }
       else {
-        NotificationManager.error(data.Response.string_response || 'API Failure');
+        NotificationManager.error(data.string_response || 'API Failure');
       }
     }
     else {
