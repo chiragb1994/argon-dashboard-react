@@ -103,7 +103,7 @@ class Information extends React.Component {
                 <Card className="bg-secondary shadow border-0">
                   <CardBody className="px-lg-5 py-lg-5 text-justify">
                     <div className="text-uppercase text-center mt-2 mb-2">
-                      COVIDelivery is a non-profit initiative with the intent to connect distressed
+                      COVID SOS is a non-profit initiative with the intent to connect distressed
                       individuals with volunteers in lieu of COVID-19.
                     </div>
                   </CardBody>

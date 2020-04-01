@@ -362,25 +362,27 @@ class Map extends React.Component {
                         href="#"
                         onClick={e => this.toggleNavs(e, 0)}
                     >
-                      <span className="d-none d-md-block">All</span>
-                      <span className="d-md-none">A</span>
+                      <span className="d-md-block">All</span>
+                      {/*<span className="d-md-none">A</span>*/}
                     </NavLink>
                   </NavItem>
                   <NavItem>
                     <NavLink
-                        className={classnames("py-2 px-3", {
+                        className={classnames("py-md-2 px-md-3 py-1 px-2", {
                           active: this.state.activeNav === 1
                         })}
                         href="#"
                         onClick={e => this.toggleNavs(e, 1)}
                     >
                       <span className="d-none d-md-block">Volunteer</span>
-                      <span className="d-md-none">V</span>
+                      <span className="d-md-none">
+                        <img src={require("assets/img/icons/volunteer-hands.svg")} style={{height:'1.8rem'}}/>
+                      </span>
                     </NavLink>
                   </NavItem>
                   <NavItem>
                     <NavLink
-                        className={classnames("py-2 px-3", {
+                        className={classnames("py-md-2 px-md-3 py-1 px-2", {
                           active: this.state.activeNav === 2
                         })}
                         data-toggle="tab"
@@ -388,7 +390,9 @@ class Map extends React.Component {
                         onClick={e => this.toggleNavs(e, 2)}
                     >
                       <span className="d-none d-md-block">Requests</span>
-                      <span className="d-md-none">R</span>
+                      <span className="d-md-none">
+                        <img src={require("assets/img/icons/old.svg")} style={{height:'1.8rem'}}/>
+                      </span>
                     </NavLink>
                   </NavItem>
                 </Nav>

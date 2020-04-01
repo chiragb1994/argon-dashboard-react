@@ -43,6 +43,7 @@ class FormGroupTemplate extends React.Component {
             {
               type === 'select' && optionsArray ?
                   <Input {...attributes} placeholder={placeholder} type={type}>
+                    <option value="">{placeholder}</option>
                     {optionsArray.map(org => {
                       return (<option key={org.value} value={org.value}>{org.label}</option>);
                     })}

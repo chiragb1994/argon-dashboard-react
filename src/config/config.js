@@ -1,5 +1,5 @@
 // const baseUrl = 'http://localhost';
-const baseUrl = 'https://covidsos-api.thebangaloreguy.com';
+const baseUrl = 'https://api.covidsos.org';
 
 const config = {
   volunteerEndpoint: baseUrl + '/create_volunteer',

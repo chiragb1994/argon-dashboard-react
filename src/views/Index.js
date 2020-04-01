@@ -29,9 +29,8 @@ import config from "config/config";
 // core components
 
 const organisationOptions = [
-  { value: '', label: 'Select Organisation' },
-  { value: 'Greendream', label: 'Greendream' },
-  { value: 'Other', label: 'Other' }
+  { value: 'Green Dream Foundation', label: 'Green Dream Foundation' },
+  { value: 'No particular organisation', label: 'No particular organisation ' }
 ];
 
 class Index extends React.Component {

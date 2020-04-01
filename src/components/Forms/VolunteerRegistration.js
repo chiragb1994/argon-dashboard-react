@@ -115,7 +115,7 @@ class VolunteerRegistration extends React.Component {
                              placeholder="Location (Mention nearest Maps Landmark - that you specify on apps like Ola, Uber and Swiggy)"
                              value={volunteer.address}
                              onChange={e => this.updateData(e, 'address')}/>
-          <FormGroupTemplate iconClass="fas fa-users" placeholder="Organisation"
+          <FormGroupTemplate iconClass="fas fa-users" placeholder="Which organisation would you like to volunteer for?"
                              type="select"
                              optionsArray={organisationOptions}
                              value={volunteer.organisation}

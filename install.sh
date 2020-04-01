@@ -9,7 +9,7 @@ scp -r -i ~/.ssh/covid/covid19_sos.pem * ubuntu@3.6.230.117:/var/www/html/
 
 echo ""
 echo ""
-echo "Link: https://covidsos.thebangaloreguy.com"
+echo "Link: https://covidsos.org"
 echo ""
 echo ""
 date

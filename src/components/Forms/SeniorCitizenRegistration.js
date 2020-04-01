@@ -116,7 +116,7 @@ class SeniorCitizenRegistration extends React.Component {
                              placeholder="Location (be as precise as possible)"
                              value={request.address}
                              onChange={e => this.updateData(e, 'address')}/>
-          <FormGroupTemplate iconClass="fas fa-users" placeholder="Organisation"
+          <FormGroupTemplate iconClass="fas fa-users" placeholder="Where would you like to place your request?"
                              type="select"
                              optionsArray={organisationOptions}
                              value={request.organisation}
