@@ -31,7 +31,7 @@ class FormGroupTemplate extends React.Component {
   }
 
   render() {
-    const {iconClass, placeholder, type, ...attributes} = this.props;
+    const {iconClass, placeholder, type, optionsArray, ...attributes} = this.props;
     return (
         <FormGroup>
           <InputGroup className="input-group-alternative mb-3">
@@ -40,7 +40,16 @@ class FormGroupTemplate extends React.Component {
                 <i className={iconClass}/>
               </InputGroupText>
             </InputGroupAddon>
-            <Input {...attributes} placeholder={placeholder} type={type}/>
+            {
+              type === 'select' && optionsArray ?
+                  <Input {...attributes} placeholder={placeholder} type={type}>
+                    {optionsArray.map(org => {
+                      return (<option key={org.value} value={org.value}>{org.label}</option>);
+                    })}
+                  </Input>
+                  :
+                  <Input {...attributes} placeholder={placeholder} type={type}/>
+            }
           </InputGroup>
         </FormGroup>
     );
@@ -54,7 +63,8 @@ UserDropDown.defaultProps = {
 FormGroupTemplate.propTypes = {
   iconClass: PropTypes.string,
   placeholder: PropTypes.string,
-  type: PropTypes.string
+  type: PropTypes.string,
+  optionsArray: PropTypes.array
 };
 
 export default FormGroupTemplate;

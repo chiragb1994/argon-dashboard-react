@@ -21,12 +21,18 @@ import React from "react";
 import {Card, CardBody, CardHeader, Col, Container, Row} from "reactstrap";
 import Header from "components/Headers/Header.js";
 import Map from "components/Map/Map.js";
-import OrganizationRegistration from "components/Forms/OrganizationRegistration.js";
+import OrganisationRegistration from "components/Forms/OrganisationRegistration.js";
 import SeniorCitizenRegistration from "components/Forms/SeniorCitizenRegistration.js";
 import VolunteerRegistration from "components/Forms/VolunteerRegistration.js";
 import config from "config/config";
 
 // core components
+
+const organisationOptions = [
+  { value: '', label: 'Select Organisation' },
+  { value: 'Greendream', label: 'Greendream' },
+  { value: 'Other', label: 'Other' }
+];
 
 class Index extends React.Component {
 
@@ -62,7 +68,7 @@ class Index extends React.Component {
               {
                 loggedIn ? null :
                     <Col xl="4">
-                      {this.getCard('Request Help', <SeniorCitizenRegistration/>)}
+                      {this.getCard('Request Help', <SeniorCitizenRegistration organisationOptions={organisationOptions}/>)}
                     </Col>
               }
             </Row>
@@ -70,13 +76,13 @@ class Index extends React.Component {
               loggedIn ? null :
                   <Row className="mt-5">
                     <Col className="mb-5 mb-xl-0" xl="8">
-                      {this.getCard('Become a Volunteer', <VolunteerRegistration/>)}
+                      {this.getCard('Become a Volunteer', <VolunteerRegistration organisationOptions={organisationOptions}/>)}
                     </Col>
                     <Col xl="4">
-                      {this.getCard('Contact the admin', <><p>If you are an organization and would
+                      {this.getCard('Contact the admin', <><p>If you are an organisation and would
                         like to be a part of the efforts in here, please drop your details here. We
                         will
-                        get back to you.</p> <OrganizationRegistration/></>)}
+                        get back to you.</p> <OrganisationRegistration/></>)}
                     </Col>
                   </Row>
             }

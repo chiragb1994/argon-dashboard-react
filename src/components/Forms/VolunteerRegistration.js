@@ -25,6 +25,8 @@ import FormGroupTemplate from "./FormGroupTemplate";
 import NumberFormat from 'react-number-format';
 import config from "config/config";
 import {makeApiCall} from "utils/utils";
+import PropTypes from "prop-types";
+import Header from "../Headers/Header";
 
 const defaultData = {
   volunteer: {
@@ -32,6 +34,7 @@ const defaultData = {
     mob_number: '',
     email_id: '',
     address: '',
+    organisation: '',
     latitude: '',
     longitude: '',
     checked: ''
@@ -59,8 +62,7 @@ class VolunteerRegistration extends React.Component {
   isSubmitDisabled() {
     const {volunteer, isSubmitClicked} = this.state;
     return isSubmitClicked || !volunteer.name || !volunteer.mob_number || !volunteer.email_id
-        || !volunteer.address
-        || !volunteer.checked;
+        || !volunteer.address || !volunteer.organisation || !volunteer.checked;
   }
 
   submitData(event) {
@@ -96,6 +98,7 @@ class VolunteerRegistration extends React.Component {
 
   render() {
     const {volunteer} = this.state;
+    const {organisationOptions} = this.props;
     return (
         <Form role="form" onSubmit={this.submitData}>
           <FormGroupTemplate iconClass="ni ni-hat-3" placeholder="Full Name"
@@ -112,6 +115,11 @@ class VolunteerRegistration extends React.Component {
                              placeholder="Location (Mention nearest Maps Landmark - that you specify on apps like Ola, Uber and Swiggy)"
                              value={volunteer.address}
                              onChange={e => this.updateData(e, 'address')}/>
+          <FormGroupTemplate iconClass="fas fa-users" placeholder="Organisation"
+                             type="select"
+                             optionsArray={organisationOptions}
+                             value={volunteer.organisation}
+                             onChange={e => this.updateData(e, 'organisation')}/>
           <FormGroup>
             <InputGroup className="input-group-alternative mb-3">
               <InputGroupAddon addonType="prepend">
@@ -144,6 +152,14 @@ class VolunteerRegistration extends React.Component {
         ;
   }
 }
+
+VolunteerRegistration.defaultProps = {
+  organisationOptions: []
+};
+
+VolunteerRegistration.propTypes = {
+  organisationOptions: PropTypes.array
+};
 
 export default geolocated({
   positionOptions: {

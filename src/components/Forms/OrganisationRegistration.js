@@ -35,7 +35,7 @@ const defaultData = {
   },
   isSubmitClicked: false
 };
-class OrganizationRegistration extends React.Component {
+class OrganisationRegistration extends React.Component {
   constructor(props) {
     super(props);
     this.state = defaultData;
@@ -74,7 +74,7 @@ class OrganizationRegistration extends React.Component {
           <FormGroupTemplate iconClass="ni ni-hat-3" placeholder="Name"
                              value={organisation.name}
                              onChange={e => this.updateData(e, 'name')}/>
-          <FormGroupTemplate iconClass="fas fa-users" placeholder="Organization Name"
+          <FormGroupTemplate iconClass="fas fa-users" placeholder="Organisation Name"
                              value={organisation.organisation}
                              onChange={e => this.updateData(e, 'organisation')}/>
           <FormGroupTemplate iconClass="ni ni-mobile-button" placeholder="Mobile Number"
@@ -99,4 +99,4 @@ class OrganizationRegistration extends React.Component {
   }
 }
 
-export default OrganizationRegistration;
+export default OrganisationRegistration;

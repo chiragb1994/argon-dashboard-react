@@ -26,6 +26,7 @@ import FormGroupTemplate from "./FormGroupTemplate";
 import NumberFormat from 'react-number-format';
 import config from "config/config";
 import {makeApiCall} from "utils/utils";
+import PropTypes from "prop-types";
 
 const defaultData = {
   request: {
@@ -33,6 +34,7 @@ const defaultData = {
     mob_number: '',
     age: '',
     address: '',
+    organisation: '',
     request: '',
     latitude: '',
     longitude: '',
@@ -60,8 +62,8 @@ class SeniorCitizenRegistration extends React.Component {
 
   isSubmitDisabled() {
     const {request, isSubmitClicked} = this.state;
-    return isSubmitClicked || !request.name || !request.mob_number || !request.age || !request.address
-        || !request.checked;
+    return isSubmitClicked || !request.name || !request.mob_number || !request.age
+        || !request.address || !request.organisation || !request.checked;
   }
 
   submitData(event) {
@@ -97,6 +99,7 @@ class SeniorCitizenRegistration extends React.Component {
 
   render() {
     const {request} = this.state;
+    const {organisationOptions} = this.props;
     return (
         <Form role="form" onSubmit={this.submitData}>
           <FormGroupTemplate iconClass="ni ni-hat-3" placeholder="Name"
@@ -113,6 +116,11 @@ class SeniorCitizenRegistration extends React.Component {
                              placeholder="Location (be as precise as possible)"
                              value={request.address}
                              onChange={e => this.updateData(e, 'address')}/>
+          <FormGroupTemplate iconClass="fas fa-users" placeholder="Organisation"
+                             type="select"
+                             optionsArray={organisationOptions}
+                             value={request.organisation}
+                             onChange={e => this.updateData(e, 'organisation')}/>
           <FormGroupTemplate iconClass="fas fa-comments" placeholder="Any Special Instructions"
                              type="textarea"
                              value={request.request}
@@ -149,6 +157,14 @@ class SeniorCitizenRegistration extends React.Component {
         ;
   }
 }
+
+SeniorCitizenRegistration.defaultProps = {
+  organisationOptions: []
+};
+
+SeniorCitizenRegistration.propTypes = {
+  organisationOptions: PropTypes.array
+};
 
 export default geolocated({
   positionOptions: {

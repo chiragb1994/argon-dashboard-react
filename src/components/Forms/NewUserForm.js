@@ -78,7 +78,7 @@ class NewUserForm extends React.Component {
     return (
         // <Form role="form">
         //   <FormGroupTemplate iconClass="ni ni-hat-3" placeholder="Name"/>
-        //   <FormGroupTemplate iconClass="fas fa-users" placeholder="Organization Name"/>
+        //   <FormGroupTemplate iconClass="fas fa-users" placeholder="Organisation Name"/>
         //   <FormGroupTemplate iconClass="ni ni-mobile-button" placeholder="Mobile Number"/>
         //   <FormGroupTemplate iconClass="ni ni-email-83" placeholder="Email" type="email"/>
         //   <FormGroupTemplate iconClass="ni ni-lock-circle-open" placeholder="Password" type="password"/>
@@ -103,7 +103,7 @@ class NewUserForm extends React.Component {
                              placeholder="Password" type="password"
                              value={user.password}
                              onChange={e => this.updateData(e, 'password')}/>
-          <FormGroupTemplate iconClass="fas fa-users" placeholder="Organization Name"
+          <FormGroupTemplate iconClass="fas fa-users" placeholder="Organisation Name"
                              value={user.organisation}
                              onChange={e => this.updateData(e, 'organisation')}/>
 
