@@ -81,10 +81,10 @@ class Organisations extends React.Component {
                 </Card>
               </Col>
             </Row>
-            {this.renderNewOrganisationForm()}
             {this.renderOrganisation(require('assets/img/organisations/gdf-logo.jpg'),
                 'During #COVID19 crisis, GDF is helping underprivileged people in Noida get access to basic amenities. GDF\'s vision is to raise awareness about the environment, promote knowledge and education on prime environmental concerns especially waste management, air pollution, water conservation and climate change.',
                 'https://www.facebook.com/greendreamfoundation')}
+            {this.renderNewOrganisationForm()}
           </Container>
         </>
     );
