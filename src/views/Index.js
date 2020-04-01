@@ -18,22 +18,27 @@
 import React from "react";
 // node.js library that concatenates classes (strings)
 // reactstrap components
-import {Card, CardBody, CardHeader, Col, Container, Row} from "reactstrap";
+import {Card, CardBody, CardHeader, Col, Container, Nav, NavItem, NavLink, Row} from "reactstrap";
 import Header from "components/Headers/Header.js";
 import Map from "components/Map/Map.js";
 import OrganisationRegistration from "components/Forms/OrganisationRegistration.js";
 import SeniorCitizenRegistration from "components/Forms/SeniorCitizenRegistration.js";
 import VolunteerRegistration from "components/Forms/VolunteerRegistration.js";
 import config from "config/config";
-
+import Popup from "reactjs-popup";
 // core components
 
 const organisationOptions = [
-  { value: 'Green Dream Foundation', label: 'Green Dream Foundation' },
-  { value: 'No particular organisation', label: 'No particular organisation ' }
+  {value: 'Green Dream Foundation', label: 'Green Dream Foundation'},
+  {value: 'No particular organisation', label: 'No particular organisation '}
 ];
 
 class Index extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {activeForm: 0};
+  }
 
   getCard(header, body) {
     return (
@@ -56,6 +61,59 @@ class Index extends React.Component {
     const loggedIn = localStorage.getItem(config.userIdStorageKey);
     return (
         <>
+          <Popup defaultOpen closeOnEscape closeOnDocumentClick position="right center"
+                 contentStyle={{borderRadius: "0.375rem"}}>
+            {close => (
+                <CardBody className="pre-scrollable">
+                  <Row className="justify-content-end">
+                    <a className="close" href="#index" onClick={close}>
+                      &times;
+                    </a>
+                  </Row>
+                  <Row className="justify-content-center">
+                    {this.state.activeForm === 1 ?
+                        <VolunteerRegistration/> :
+                        this.state.activeForm === 2 ?
+                            <SeniorCitizenRegistration/> :
+                            <Nav pills horizontal>
+                              <NavItem>
+                                <NavLink
+                                    className="py-2 px-3 text-white bg-primary"
+                                    href="#"
+                                    onClick={e => {
+                                      this.setState({activeForm: 1});
+                                      e.preventDefault();
+                                    }}
+                                >
+                                  <span className="d-md-block">I want to help</span>
+                                </NavLink>
+                              </NavItem>
+                              <NavItem>
+                                <NavLink
+                                    className="py-2 px-3 text-white bg-primary"
+                                    href="#"
+                                    onClick={e => {
+                                      this.setState({activeForm: 2});
+                                      e.preventDefault();
+                                    }}
+                                >
+                                  <span className="d-md-block">I need help</span>
+                                </NavLink>
+                              </NavItem>
+                              <NavItem>
+                                <NavLink
+                                    className="py-2 px-3 text-white bg-primary"
+                                    href="#"
+                                    onClick={close}>
+                                  <span className="d-md-block">Just exploring</span>
+                                </NavLink>
+                              </NavItem>
+                            </Nav>
+                    }
+                  </Row>
+                </CardBody>
+            )}
+          </Popup>
           <Header/>
           {/* Page content */}
           <Container className="mt--7" fluid>
@@ -67,7 +125,8 @@ class Index extends React.Component {
               {
                 loggedIn ? null :
                     <Col xl="4">
-                      {this.getCard('Request Help', <SeniorCitizenRegistration organisationOptions={organisationOptions}/>)}
+                      {this.getCard('Request Help', <SeniorCitizenRegistration
+                          organisationOptions={organisationOptions}/>)}
                     </Col>
               }
             </Row>
@@ -75,7 +134,8 @@ class Index extends React.Component {
               loggedIn ? null :
                   <Row className="mt-5">
                     <Col className="mb-5 mb-xl-0" xl="8">
-                      {this.getCard('Become a Volunteer', <VolunteerRegistration organisationOptions={organisationOptions}/>)}
+                      {this.getCard('Become a Volunteer', <VolunteerRegistration
+                          organisationOptions={organisationOptions}/>)}
                     </Col>
                     <Col xl="4">
                       {this.getCard('Contact the admin', <><p>If you are an organisation and would
