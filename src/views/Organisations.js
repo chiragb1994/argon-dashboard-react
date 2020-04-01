@@ -19,6 +19,7 @@ import React from "react";
 // reactstrap components
 import {Card, CardBody, CardFooter, CardHeader, Col, Container, Row} from "reactstrap";
 import Header from "components/Headers/Header.js";
+import OrganisationRegistration from "../components/Forms/OrganisationRegistration";
 
 class Organisations extends React.Component {
 
@@ -44,6 +45,25 @@ class Organisations extends React.Component {
     );
   }
 
+  renderNewOrganisationForm() {
+    return (
+        <Row className="justify-content-center mt-5">
+          <Col lg="8" md="8">
+            <Card className="bg-secondary shadow border-0">
+              <CardHeader className="bg-transparent pb-3">
+                <div className="text-uppercase text-muted text-center mt-2 mb-2">
+                  Reach out to us
+                </div>
+              </CardHeader>
+              <CardBody className="px-lg-5 py-lg-5 text-justify">
+                <OrganisationRegistration/>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+    );
+  }
+
   render() {
     return (
         <>
@@ -61,6 +81,7 @@ class Organisations extends React.Component {
                 </Card>
               </Col>
             </Row>
+            {this.renderNewOrganisationForm()}
             {this.renderOrganisation(require('assets/img/organisations/gdf-logo.jpg'),
                 'During #COVID19 crisis, GDF is helping underprivileged people in Noida get access to basic amenities. GDF\'s vision is to raise awareness about the environment, promote knowledge and education on prime environmental concerns especially waste management, air pollution, water conservation and climate change.',
                 'https://www.facebook.com/greendreamfoundation')}
