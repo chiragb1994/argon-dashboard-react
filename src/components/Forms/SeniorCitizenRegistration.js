@@ -34,7 +34,7 @@ const defaultData = {
     mob_number: '',
     age: '',
     address: '',
-    organisation: '',
+    source: '',
     request: '',
     latitude: '',
     longitude: '',
@@ -63,7 +63,7 @@ class SeniorCitizenRegistration extends React.Component {
   isSubmitDisabled() {
     const {request, isSubmitClicked} = this.state;
     return isSubmitClicked || !request.name || !request.mob_number || !request.age
-        || !request.address || !request.organisation || !request.checked;
+        || !request.address || !request.source || !request.checked;
   }
 
   submitData(event) {
@@ -119,8 +119,8 @@ class SeniorCitizenRegistration extends React.Component {
           <FormGroupTemplate iconClass="fas fa-users" placeholder="Where would you like to place your request?"
                              type="select"
                              optionsArray={organisationOptions}
-                             value={request.organisation}
-                             onChange={e => this.updateData(e, 'organisation')}/>
+                             value={request.source}
+                             onChange={e => this.updateData(e, 'source')}/>
           <FormGroupTemplate iconClass="fas fa-comments" placeholder="Any Special Instructions"
                              type="textarea"
                              value={request.request}

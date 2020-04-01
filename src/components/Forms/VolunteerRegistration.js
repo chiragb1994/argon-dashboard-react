@@ -34,7 +34,7 @@ const defaultData = {
     mob_number: '',
     email_id: '',
     address: '',
-    organisation: '',
+    source: '',
     latitude: '',
     longitude: '',
     checked: ''
@@ -62,7 +62,7 @@ class VolunteerRegistration extends React.Component {
   isSubmitDisabled() {
     const {volunteer, isSubmitClicked} = this.state;
     return isSubmitClicked || !volunteer.name || !volunteer.mob_number || !volunteer.email_id
-        || !volunteer.address || !volunteer.organisation || !volunteer.checked;
+        || !volunteer.address || !volunteer.source || !volunteer.checked;
   }
 
   submitData(event) {
@@ -118,8 +118,8 @@ class VolunteerRegistration extends React.Component {
           <FormGroupTemplate iconClass="fas fa-users" placeholder="Which organisation would you like to volunteer for?"
                              type="select"
                              optionsArray={organisationOptions}
-                             value={volunteer.organisation}
-                             onChange={e => this.updateData(e, 'organisation')}/>
+                             value={volunteer.source}
+                             onChange={e => this.updateData(e, 'source')}/>
           <FormGroup>
             <InputGroup className="input-group-alternative mb-3">
               <InputGroupAddon addonType="prepend">

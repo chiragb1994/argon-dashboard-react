@@ -21,7 +21,7 @@ export const makeApiCall = (url, method, data, successCb = null, notify = true) 
   })
   .then(data => {
     if (data) {
-      if (data.status || true) {
+      if (data.status) {
         if (notify) {
           NotificationManager.success(data.string_response || 'Success');
         }
