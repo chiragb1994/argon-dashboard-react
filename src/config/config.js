@@ -16,6 +16,7 @@ const config = {
   userNameStorageKey: 'username',
   fullNameStorageKey: 'full_name',
   userIdStorageKey: 'user_id',
+  alreadyAccessedStorageKey: 'already_accessed',
   superuserAccessKey: 'superuser',
 };
 

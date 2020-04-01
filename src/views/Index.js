@@ -57,79 +57,89 @@ class Index extends React.Component {
     )
   }
 
+  getPopup() {
+    if (localStorage.getItem(config.alreadyAccessedStorageKey)) {
+      return null;
+    }
+    localStorage.setItem(config.alreadyAccessedStorageKey, 'true');
+    return (
+        <Popup defaultOpen closeOnEscape closeOnDocumentClick position="right center"
+               contentStyle={{borderRadius: "0.375rem", minWidth: "50%", width: "unset"}}
+               className="col-md-6">
+          {close => (
+              <>
+                <CardHeader className="bg-transparent">
+                  <Row className="justify-content-end">
+                    <a className="close" href="#index" onClick={close}>
+                      &times;
+                    </a>
+                  </Row>
+                  <Row className="align-items-center">
+                    <div className="col text-center">
+                      <h2 className="mb-0">
+                        {this.state.activeForm === 1 ?
+                            'Volunteer Form' :
+                            this.state.activeForm === 2 ?
+                                'Request Form' :
+                                'Welcome to COVID SOS'}
+                      </h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody className="pre-scrollable">
+                  <Row className="justify-content-center">
+                    {this.state.activeForm === 1 ?
+                        <VolunteerRegistration/> :
+                        this.state.activeForm === 2 ?
+                            <SeniorCitizenRegistration/> :
+                            <Nav pills horizontal>
+                              <NavItem>
+                                <NavLink
+                                    className="py-2 px-3 text-white bg-primary"
+                                    href="#"
+                                    onClick={e => {
+                                      this.setState({activeForm: 1});
+                                      e.preventDefault();
+                                    }}
+                                >
+                                  <span className="d-md-block">I want to help</span>
+                                </NavLink>
+                              </NavItem>
+                              <NavItem>
+                                <NavLink
+                                    className="py-2 px-3 text-white bg-primary"
+                                    href="#"
+                                    onClick={e => {
+                                      this.setState({activeForm: 2});
+                                      e.preventDefault();
+                                    }}
+                                >
+                                  <span className="d-md-block">I need help</span>
+                                </NavLink>
+                              </NavItem>
+                              <NavItem>
+                                <NavLink
+                                    className="py-2 px-3 text-white bg-primary"
+                                    href="#"
+                                    onClick={close}>
+                                  <span className="d-md-block">Just exploring</span>
+                                </NavLink>
+                              </NavItem>
+                            </Nav>
+                    }
+                  </Row>
+                </CardBody>
+              </>
+          )}
+        </Popup>
+    );
+  }
+
   render() {
     const loggedIn = localStorage.getItem(config.userIdStorageKey);
     return (
         <>
-          <Popup defaultOpen closeOnEscape closeOnDocumentClick position="right center"
-                 contentStyle={{borderRadius: "0.375rem", minWidth: "50%", width: "unset"}}
-                 className="col-md-6">
-            {close => (
-                <>
-                  <CardHeader className="bg-transparent">
-                    <Row className="justify-content-end">
-                      <a className="close" href="#index" onClick={close}>
-                        &times;
-                      </a>
-                    </Row>
-                    <Row className="align-items-center">
-                      <div className="col text-center">
-                        <h2 className="mb-0">
-                          {this.state.activeForm === 1 ?
-                              'Volunteer Form' :
-                              this.state.activeForm === 2 ?
-                                  'Request Form' :
-                                  'Welcome to COVID SOS'}
-                        </h2>
-                      </div>
-                    </Row>
-                  </CardHeader>
-                  <CardBody className="pre-scrollable">
-                    <Row className="justify-content-center">
-                      {this.state.activeForm === 1 ?
-                          <VolunteerRegistration/> :
-                          this.state.activeForm === 2 ?
-                              <SeniorCitizenRegistration/> :
-                              <Nav pills horizontal>
-                                <NavItem>
-                                  <NavLink
-                                      className="py-2 px-3 text-white bg-primary"
-                                      href="#"
-                                      onClick={e => {
-                                        this.setState({activeForm: 1});
-                                        e.preventDefault();
-                                      }}
-                                  >
-                                    <span className="d-md-block">I want to help</span>
-                                  </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                  <NavLink
-                                      className="py-2 px-3 text-white bg-primary"
-                                      href="#"
-                                      onClick={e => {
-                                        this.setState({activeForm: 2});
-                                        e.preventDefault();
-                                      }}
-                                  >
-                                    <span className="d-md-block">I need help</span>
-                                  </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                  <NavLink
-                                      className="py-2 px-3 text-white bg-primary"
-                                      href="#"
-                                      onClick={close}>
-                                    <span className="d-md-block">Just exploring</span>
-                                  </NavLink>
-                                </NavItem>
-                              </Nav>
-                      }
-                    </Row>
-                  </CardBody>
-                </>
-            )}
-          </Popup>
+          {this.getPopup()}
           <Header/>
           {/* Page content */}
           <Container className="mt--7" fluid>

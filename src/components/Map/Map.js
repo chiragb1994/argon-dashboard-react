@@ -60,19 +60,25 @@ class Map extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log(prevState);
+    console.log(this.state);
     if (!prevState.map && this.state.map) {
-      this.createSource(this.state.map, this.state.volunteerData, this.state.requestData);
-      this.state.map.on("load", () => this.addMapLayers(this.state.map));
+      this.createSource(this.state.map);
+      if (this.state.map.loaded()) {
+        this.addMapLayers(this.state.map);
+      }
+      else {
+        this.state.map.on("load", () => this.addMapLayers(this.state.map));
+      }
     }
     const isMapLoaded = this.state.map && this.state.map.loaded();
-    const isLoadingComplete = prevState.isLoading && this.state.isLoaded;
     const wasMapPreviouslyNotLoaded = !prevState.map || !prevState.map.loaded();
     const dataChanged =
         (prevState.volunteerData.features.length !== this.state.volunteerData.features.length) ||
         (prevState.requestData.features.length !== this.state.requestData.features.length);
-    if (
-        isMapLoaded &&
-        (isLoadingComplete || wasMapPreviouslyNotLoaded || dataChanged)
+    console.log(isMapLoaded, wasMapPreviouslyNotLoaded, dataChanged);
+    if (isMapLoaded &&
+        (wasMapPreviouslyNotLoaded || dataChanged)
     ) {
       // update source
       this.state.map
@@ -157,36 +163,33 @@ class Map extends React.Component {
         }, false);
   }
 
-  createSource(map, volunteerData, requestData) {
+  getDataSourceConfig(data, clusterProperties){
+    return {
+      type: 'geojson',
+      data: this.state.volunteerData,
+      cluster: true,
+      clusterRadius: 20,
+      clusterProperties
+    };
+  }
+
+  createSource(map) {
     const clusterProperties = {
       type: ["coalesce", ["get", 'type']]
     };
-    const volunteerDataSourceConfig = {
-      type: 'geojson',
-      data: volunteerData,
-      cluster: true,
-      clusterRadius: 20,
-      clusterProperties
-    };
-    const requestDataSourceConfig = {
-      type: 'geojson',
-      data: requestData,
-      cluster: true,
-      clusterRadius: 20,
-      clusterProperties
-    };
     if (map.loaded()) {
-      map.addSource(volunteerDataSource, volunteerDataSourceConfig);
-      map.addSource(requestDataSource, requestDataSourceConfig);
+      map.addSource(volunteerDataSource, this.getDataSourceConfig(this.state.volunteerData, clusterProperties));
+      map.addSource(requestDataSource, this.getDataSourceConfig(this.state.requestData, clusterProperties));
     } else {
       map.on("load", () => {
-        map.addSource(volunteerDataSource, volunteerDataSourceConfig);
-        map.addSource(requestDataSource, requestDataSourceConfig);
+        map.addSource(volunteerDataSource, this.getDataSourceConfig(this.state.volunteerData, clusterProperties));
+        map.addSource(requestDataSource, this.getDataSourceConfig(this.state.requestData, clusterProperties));
       });
     }
   }
 
   addMapLayers(map) {
+    console.log('addMapLayers', map);
     this.addLayers(map, volunteerLayerId, volunteerDataSource, 'volunteer-hands', 'green');
     this.addLayers(map, requestLayerId, requestDataSource, 'old', 'red');
   }
@@ -322,6 +325,8 @@ class Map extends React.Component {
 
   setLayerVisibility() {
     const {activeNav, map} = this.state;
+    console.log(map.getStyle().sources);
+    console.log(map.getStyle().layers);
     map.getStyle().layers.forEach(function (layer) {
       if (layer.id.indexOf('covid') === -1) {
         return;
