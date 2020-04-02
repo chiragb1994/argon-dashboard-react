@@ -58,10 +58,11 @@ class Index extends React.Component {
   }
 
   getPopup() {
-    if (localStorage.getItem(config.alreadyAccessedStorageKey)) {
+    if ((sessionStorage.getItem(config.alreadyAccessedSessionStorageKey) ||
+        localStorage.getItem(config.userIdStorageKey)) && this.state.activeForm === 0) {
       return null;
     }
-    localStorage.setItem(config.alreadyAccessedStorageKey, 'true');
+    sessionStorage.setItem(config.alreadyAccessedSessionStorageKey, 'true');
     return (
         <Popup defaultOpen closeOnEscape closeOnDocumentClick position="right center"
                contentStyle={{borderRadius: "0.375rem", minWidth: "50%", width: "unset"}}
