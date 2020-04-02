@@ -23,7 +23,6 @@ export const config = {
 };
 
 export const organisationOptions = [
-  {value: 'covidsos', label: 'Covid SOS Initiative'},
   {value: 'GreenDream', label: 'Green Dream Foundation'},
-  {value: 'NA', label: 'No particular organisation '}
+  {value: 'covidsos', label: 'No particular organisation '}
 ];
