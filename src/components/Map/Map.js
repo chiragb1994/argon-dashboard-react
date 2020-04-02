@@ -166,7 +166,7 @@ class Map extends React.Component {
   getDataSourceConfig(data, clusterProperties){
     return {
       type: 'geojson',
-      data: this.state.volunteerData,
+      data: data,
       cluster: true,
       clusterRadius: 20,
       clusterProperties
