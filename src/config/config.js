@@ -1,7 +1,7 @@
 // const baseUrl = 'http://localhost';
 const baseUrl = 'https://api.covidsos.org';
 
-const config = {
+export const config = {
   volunteerEndpoint: baseUrl + '/create_volunteer',
   requestEndpoint: baseUrl + '/create_request',
   orgEndpoint: baseUrl + '/reachout_form',
@@ -10,7 +10,9 @@ const config = {
   summaryEndpoint: baseUrl + '/top_ticker',
   mapEndpoint: baseUrl + '/public_map_data',
   mapAuthEndpoint: baseUrl + '/private_map_data',
-  assignEndpoint: baseUrl + '/assign',
+  assignEndpoint: baseUrl + '/assign_volunteer',
+  updateRequestEndpoint: baseUrl + '/update_request_info',
+  updateVolunteerEndpoint: baseUrl + '/update_volunteer_info',
 
   accessTypeStorageKey: 'access_level',
   userNameStorageKey: 'username',
@@ -20,4 +22,8 @@ const config = {
   superuserAccessKey: 'superuser',
 };
 
-export default config;
+export const organisationOptions = [
+  {value: 'covidsos', label: 'Covid SOS Initiative'},
+  {value: 'GreenDream', label: 'Green Dream Foundation'},
+  {value: 'NA', label: 'No particular organisation '}
+];

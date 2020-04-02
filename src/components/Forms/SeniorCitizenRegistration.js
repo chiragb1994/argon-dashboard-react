@@ -24,40 +24,50 @@ import {geolocated} from "react-geolocated";
 import Form from "reactstrap/lib/Form";
 import FormGroupTemplate from "./FormGroupTemplate";
 import NumberFormat from 'react-number-format';
-import config from "config/config";
-import {makeApiCall} from "utils/utils";
+import {config, organisationOptions} from "../../config/config";
+import {makeApiCall} from "../../utils/utils";
 import PropTypes from "prop-types";
 
 const defaultData = {
-  request: {
-    name: '',
-    mob_number: '',
-    age: '',
-    address: '',
-    source: '',
-    request: '',
-    latitude: '',
-    longitude: '',
-    checked: ''
-  },
-  isSubmitClicked: false
+  name: '',
+  mob_number: '',
+  age: '',
+  address: '',
+  source: '',
+  request: '',
+  latitude: '',
+  longitude: '',
+  checked: ''
 };
+
+const statusOptions = [
+  {value: 'pending', label: 'Pending'},
+  {value: 'matched', label: 'Matched'},
+  {value: 'cancelled', label: 'Cancelled'}
+];
 
 class SeniorCitizenRegistration extends React.Component {
   constructor(props) {
     super(props);
-    this.state = defaultData;
+    this.state = {request: defaultData, isSubmitClicked: false, changedKeys: []};
+    if (props.existingData) {
+      const {existingData} = props;
+      existingData.checked = true;
+      existingData.status = existingData.status.toLowerCase();
+      this.state = {request: existingData, isSubmitClicked: false, changedKeys: []};
+    }
     this.updateData = this.updateData.bind(this);
     this.submitData = this.submitData.bind(this);
   }
 
   updateData(event, field) {
-    const {request} = this.state;
+    const {request, changedKeys} = this.state;
     request[field] = event.target.value;
     if (field === 'checked') {
       request[field] = event.target.checked;
     }
-    this.setState({request: request, isSubmitClicked: false});
+    changedKeys.push(field);
+    this.setState({request: request, isSubmitClicked: false, changedKeys: changedKeys});
   }
 
   isSubmitDisabled() {
@@ -71,13 +81,27 @@ class SeniorCitizenRegistration extends React.Component {
       return;
     }
     this.setState({isSubmitClicked: true});
-    const {request} = this.state;
-    const {isGeolocationAvailable, isGeolocationEnabled, coords} = this.props;
+    const {request, changedKeys} = this.state;
+    const {isGeolocationAvailable, isGeolocationEnabled, coords, existingData} = this.props;
     if (isGeolocationAvailable && isGeolocationEnabled && coords) {
       request.latitude = coords.latitude;
       request.longitude = coords.longitude;
     }
-    makeApiCall(config.requestEndpoint, 'POST', request);
+    let data = {};
+    let url;
+    if (existingData && request.r_id) {
+      data.request_id = request.r_id;
+      Object.keys(request)
+      .filter(key => changedKeys.indexOf(key) !== -1)
+      .forEach(key => {
+        data[key] = request[key]
+      });
+      url = config.updateRequestEndpoint;
+    } else {
+      data = request;
+      url = config.requestEndpoint;
+    }
+    makeApiCall(url, 'POST', data);
     event.preventDefault();
   }
 
@@ -99,7 +123,6 @@ class SeniorCitizenRegistration extends React.Component {
 
   render() {
     const {request} = this.state;
-    const {organisationOptions} = this.props;
     return (
         <Form role="form" onSubmit={this.submitData}>
           <FormGroupTemplate iconClass="ni ni-hat-3" placeholder="Name"
@@ -116,7 +139,8 @@ class SeniorCitizenRegistration extends React.Component {
                              placeholder="Location (be as precise as possible)"
                              value={request.address}
                              onChange={e => this.updateData(e, 'address')}/>
-          <FormGroupTemplate iconClass="fas fa-users" placeholder="Where would you like to place your request?"
+          <FormGroupTemplate iconClass="fas fa-users"
+                             placeholder="Where would you like to place your request?"
                              type="select"
                              optionsArray={organisationOptions}
                              value={request.source}
@@ -125,16 +149,26 @@ class SeniorCitizenRegistration extends React.Component {
                              type="textarea"
                              value={request.request}
                              onChange={e => this.updateData(e, 'request')}/>
-          <FormGroup>
-            <InputGroup className="input-group-alternative mb-3">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="fas fa-location-arrow"/>
-                </InputGroupText>
-              </InputGroupAddon>
-              {this.getLatLong()}
-            </InputGroup>
-          </FormGroup>
+          {
+            request.r_id ?
+                <FormGroupTemplate iconClass="fas fa-users"
+                                   placeholder="Status"
+                                   type="select"
+                                   optionsArray={statusOptions}
+                                   value={request.status}
+                                   onChange={e => this.updateData(e, 'status')}/>
+                :
+                <FormGroup>
+                  <InputGroup className="input-group-alternative mb-3">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="fas fa-location-arrow"/>
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    {this.getLatLong()}
+                  </InputGroup>
+                </FormGroup>
+          }
           <div className="custom-control custom-control-alternative custom-checkbox">
             <input
                 className="custom-control-input"
@@ -159,11 +193,11 @@ class SeniorCitizenRegistration extends React.Component {
 }
 
 SeniorCitizenRegistration.defaultProps = {
-  organisationOptions: []
+  existingData: null
 };
 
 SeniorCitizenRegistration.propTypes = {
-  organisationOptions: PropTypes.array
+  existingData: PropTypes.object
 };
 
 export default geolocated({

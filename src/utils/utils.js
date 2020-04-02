@@ -1,5 +1,5 @@
 import {NotificationManager} from "react-notifications";
-import config from "../config/config";
+import {config} from "../config/config";
 
 export const makeApiCall = (url, method, data, successCb = null, notify = true) => {
   const formData = new FormData();
@@ -9,6 +9,11 @@ export const makeApiCall = (url, method, data, successCb = null, notify = true) 
     method: method,
     body: formData
   };
+  console.log(url, requestOptions);
+  apiCall(url, requestOptions, successCb, notify)
+};
+
+const apiCall = (url, requestOptions, successCb, notify) => {
   fetch(url, requestOptions)
   .then(response => {
     if (response.status >= 400) {

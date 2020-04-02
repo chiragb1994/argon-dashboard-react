@@ -18,9 +18,9 @@
 import React from "react";
 // reactstrap components
 import {Card, CardBody, CardHeader, Col, Container, Row} from "reactstrap";
-import Header from "components/Headers/Header.js";
-import NewUserForm from "components/Forms/NewUserForm";
-import {isSuperUser} from "utils/utils";
+import Header from "../components/Headers/Header.js";
+import NewUserForm from "../components/Forms/NewUserForm";
+import {isSuperUser} from "../utils/utils";
 
 class Register extends React.Component {
   render() {

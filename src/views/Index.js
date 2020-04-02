@@ -19,19 +19,14 @@ import React from "react";
 // node.js library that concatenates classes (strings)
 // reactstrap components
 import {Card, CardBody, CardHeader, Col, Container, Nav, NavItem, NavLink, Row} from "reactstrap";
-import Header from "components/Headers/Header.js";
-import Map from "components/Map/Map.js";
-import OrganisationRegistration from "components/Forms/OrganisationRegistration.js";
-import SeniorCitizenRegistration from "components/Forms/SeniorCitizenRegistration.js";
-import VolunteerRegistration from "components/Forms/VolunteerRegistration.js";
-import config from "config/config";
+import Header from "../components/Headers/Header.js";
+import Map from "../components/Map/Map.js";
+import OrganisationRegistration from "../components/Forms/OrganisationRegistration.js";
+import SeniorCitizenRegistration from "../components/Forms/SeniorCitizenRegistration.js";
+import VolunteerRegistration from "../components/Forms/VolunteerRegistration.js";
+import {config} from "../config/config";
 import Popup from "reactjs-popup";
 // core components
-
-const organisationOptions = [
-  {value: 'Green Dream Foundation', label: 'Green Dream Foundation'},
-  {value: 'No particular organisation', label: 'No particular organisation '}
-];
 
 class Index extends React.Component {
 
@@ -90,9 +85,9 @@ class Index extends React.Component {
                 <CardBody className="pre-scrollable">
                   <Row className="justify-content-center">
                     {this.state.activeForm === 1 ?
-                        <VolunteerRegistration organisationOptions={organisationOptions}/> :
+                        <VolunteerRegistration/> :
                         this.state.activeForm === 2 ?
-                            <SeniorCitizenRegistration organisationOptions={organisationOptions}/> :
+                            <SeniorCitizenRegistration/> :
                             <Nav pills horizontal>
                               <NavItem>
                                 <NavLink
@@ -152,8 +147,7 @@ class Index extends React.Component {
               {
                 loggedIn ? null :
                     <Col xl="4">
-                      {this.getCard('Request Help', <SeniorCitizenRegistration
-                          organisationOptions={organisationOptions}/>)}
+                      {this.getCard('Request Help', <SeniorCitizenRegistration/>)}
                     </Col>
               }
             </Row>
@@ -161,8 +155,7 @@ class Index extends React.Component {
               loggedIn ? null :
                   <Row className="mt-5">
                     <Col className="mb-5 mb-xl-0" xl="8">
-                      {this.getCard('Become a Volunteer', <VolunteerRegistration
-                          organisationOptions={organisationOptions}/>)}
+                      {this.getCard('Become a Volunteer', <VolunteerRegistration/>)}
                     </Col>
                     <Col xl="4">
                       {this.getCard('Contact the admin', <><p>If you are an organisation and would

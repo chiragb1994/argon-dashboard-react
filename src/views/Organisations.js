@@ -18,7 +18,7 @@
 import React from "react";
 // reactstrap components
 import {Card, CardBody, CardFooter, CardHeader, Col, Container, Row} from "reactstrap";
-import Header from "components/Headers/Header.js";
+import Header from "../components/Headers/Header.js";
 import OrganisationRegistration from "../components/Forms/OrganisationRegistration";
 
 class Organisations extends React.Component {

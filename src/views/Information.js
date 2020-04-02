@@ -18,7 +18,7 @@
 import React from "react";
 // reactstrap components
 import {Card, CardBody, CardHeader, Col, Container, Row} from "reactstrap";
-import Header from "components/Headers/Header.js";
+import Header from "../components/Headers/Header.js";
 
 class Information extends React.Component {
 

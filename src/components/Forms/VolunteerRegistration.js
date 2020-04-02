@@ -23,40 +23,47 @@ import {Button, Form, FormGroup, InputGroup, InputGroupAddon, InputGroupText} fr
 import {geolocated} from "react-geolocated";
 import FormGroupTemplate from "./FormGroupTemplate";
 import NumberFormat from 'react-number-format';
-import config from "config/config";
-import {makeApiCall} from "utils/utils";
+import {config, organisationOptions} from "../../config/config";
+import {makeApiCall} from "../../utils/utils";
 import PropTypes from "prop-types";
-import Header from "../Headers/Header";
 
 const defaultData = {
-  volunteer: {
-    name: '',
-    mob_number: '',
-    email_id: '',
-    address: '',
-    source: '',
-    latitude: '',
-    longitude: '',
-    checked: ''
-  },
-  isSubmitClicked: false
+  name: '',
+  mob_number: '',
+  email_id: '',
+  address: '',
+  source: '',
+  latitude: '',
+  longitude: '',
+  checked: ''
 };
+
+const statusOptions = [
+  {value: '1', label: 'Active'},
+  {value: '0', label: 'Inactive'}
+];
 
 class VolunteerRegistration extends React.Component {
   constructor(props) {
     super(props);
-    this.state = defaultData;
+    this.state = {volunteer: defaultData, isSubmitClicked: false, changedKeys: []};
+    if (props.existingData) {
+      const {existingData} = props;
+      existingData.checked = true;
+      this.state = {volunteer: existingData, isSubmitClicked: false, changedKeys: []};
+    }
     this.updateData = this.updateData.bind(this);
     this.submitData = this.submitData.bind(this);
   }
 
   updateData(event, field) {
-    const {volunteer} = this.state;
+    const {volunteer, changedKeys} = this.state;
     volunteer[field] = event.target.value;
     if (field === 'checked') {
       volunteer[field] = event.target.checked;
     }
-    this.setState({volunteer: volunteer, isSubmitClicked: false});
+    changedKeys.push(field);
+    this.setState({volunteer: volunteer, isSubmitClicked: false, changedKeys: changedKeys});
   }
 
   isSubmitDisabled() {
@@ -70,13 +77,27 @@ class VolunteerRegistration extends React.Component {
       return;
     }
     this.setState({isSubmitClicked: true});
-    const {volunteer} = this.state;
-    const {isGeolocationAvailable, isGeolocationEnabled, coords} = this.props;
+    const {volunteer, changedKeys} = this.state;
+    const {isGeolocationAvailable, isGeolocationEnabled, coords, existingData} = this.props;
     if (isGeolocationAvailable && isGeolocationEnabled && coords) {
       volunteer.latitude = coords.latitude;
       volunteer.longitude = coords.longitude;
     }
-    makeApiCall(config.volunteerEndpoint, 'POST', volunteer);
+    let data = {};
+    let url;
+    if (existingData && volunteer.v_id) {
+      data.volunteer_id = volunteer.v_id;
+      Object.keys(volunteer)
+      .filter(key => changedKeys.indexOf(key) !== -1)
+      .forEach(key => {
+        data[key] = volunteer[key]
+      });
+      url = config.updateVolunteerEndpoint;
+    } else {
+      data = volunteer;
+      url = config.volunteerEndpoint;
+    }
+    makeApiCall(url, 'POST', data);
     event.preventDefault();
   }
 
@@ -98,7 +119,6 @@ class VolunteerRegistration extends React.Component {
 
   render() {
     const {volunteer} = this.state;
-    const {organisationOptions} = this.props;
     return (
         <Form role="form" onSubmit={this.submitData}>
           <FormGroupTemplate iconClass="ni ni-hat-3" placeholder="Full Name"
@@ -115,21 +135,33 @@ class VolunteerRegistration extends React.Component {
                              placeholder="Location (Mention nearest Maps Landmark - that you specify on apps like Ola, Uber and Swiggy)"
                              value={volunteer.address}
                              onChange={e => this.updateData(e, 'address')}/>
-          <FormGroupTemplate iconClass="fas fa-users" placeholder="Which organisation would you like to volunteer for?"
+          <FormGroupTemplate iconClass="fas fa-users"
+                             placeholder="Which organisation would you like to volunteer for?"
                              type="select"
                              optionsArray={organisationOptions}
                              value={volunteer.source}
                              onChange={e => this.updateData(e, 'source')}/>
-          <FormGroup>
-            <InputGroup className="input-group-alternative mb-3">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="fas fa-location-arrow"/>
-                </InputGroupText>
-              </InputGroupAddon>
-              {this.getLatLong()}
-            </InputGroup>
-          </FormGroup>
+          {
+            volunteer.v_id ?
+                <FormGroupTemplate iconClass="fas fa-users"
+                                   placeholder="Status"
+                                   type="select"
+                                   optionsArray={statusOptions}
+                                   value={volunteer.status}
+                                   onChange={e => this.updateData(e, 'status')}/>
+                :
+                <FormGroup>
+                  <InputGroup className="input-group-alternative mb-3">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="fas fa-location-arrow"/>
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    {this.getLatLong()}
+                  </InputGroup>
+                </FormGroup>
+          }
+
           <div className="custom-control custom-control-alternative custom-checkbox">
             <input
                 className="custom-control-input"
@@ -154,11 +186,11 @@ class VolunteerRegistration extends React.Component {
 }
 
 VolunteerRegistration.defaultProps = {
-  organisationOptions: []
+  existingData: null
 };
 
 VolunteerRegistration.propTypes = {
-  organisationOptions: PropTypes.array
+  existingData: PropTypes.object
 };
 
 export default geolocated({

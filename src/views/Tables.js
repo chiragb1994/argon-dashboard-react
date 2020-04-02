@@ -37,14 +37,19 @@ import {
   InputGroupAddon,
   InputGroupText,
   Input,
-  Col
+  Col, CardBody
 } from "reactstrap";
 // core components
-import Header from "components/Headers/Header.js";
-import config from "config/config";
+import Header from "../components/Headers/Header.js";
+import {config} from "../config/config";
 import {withRouter} from "react-router";
 import {makeApiCall} from "../utils/utils";
 import classnames from "classnames";
+import moment from "moment";
+import Popup from "reactjs-popup";
+import AssignVolunteerForm from "../components/Forms/AssignVolunteerForm";
+import SeniorCitizenRegistration from "../components/Forms/SeniorCitizenRegistration";
+import VolunteerRegistration from "../components/Forms/VolunteerRegistration";
 
 const tableConfigMap = {
   requests: {
@@ -56,7 +61,8 @@ const tableConfigMap = {
       'Address',
       'Request',
       'Age',
-      'Status'
+      'Status',
+      'Time'
     ],
     fieldKeys: [
       'name',
@@ -64,15 +70,16 @@ const tableConfigMap = {
       'address',
       'request',
       'age',
-      'status'
+      'status',
+      'timestamp'
     ],
     pageSize: 10,
     actions: [{
       key: 'assign',
       name: 'Assign a volunteer'
     }, {
-      key: 'change_status',
-      name: 'Change Status'
+      key: 'update',
+      name: 'Update Info'
     }]
   },
   volunteers: {
@@ -83,22 +90,21 @@ const tableConfigMap = {
       'Mobile',
       'Email',
       'Address',
-      'Status'
+      'Status',
+      'Time'
     ],
     fieldKeys: [
       'name',
       'mob_number',
       'email_id',
       'address',
-      'status'
+      'status',
+      'timestamp'
     ],
     pageSize: 10,
     actions: [{
-      key: 'update_info',
+      key: 'update',
       name: 'Update Info'
-    }, {
-      key: 'activate_deactivate',
-      name: 'Activate/Deactivate'
     }]
   }
 };
@@ -121,6 +127,9 @@ class Tables extends React.Component {
           currPage: 1,
           searchString: ''
         }
+      },
+      popupDetails: {
+        isPopupOpen: false
       }
     };
     if (!localStorage.getItem(config.userIdStorageKey)) {
@@ -133,21 +142,30 @@ class Tables extends React.Component {
     this.getData();
   }
 
+  parseTimestampAndSort(data) {
+    return data.map(d => {
+      d.timestampMillis = moment(d.timestamp, "ddd, DD MMM YY, hh:mmA").valueOf();
+      return d;
+    }).sort((a, b) => a.timestampMillis < b.timestampMillis);
+  }
+
   getData() {
     makeApiCall(config.mapAuthEndpoint, 'POST',
         {user_id: localStorage.getItem(config.userIdStorageKey)},
         (response) => {
+          const requestData = this.parseTimestampAndSort(response.Requests);
+          const volunteerData = this.parseTimestampAndSort(response.Volunteers);
           this.setState({
             currState: {
               requests: {
-                data: response.Requests,
-                filteredData: response.Requests,
+                data: requestData,
+                filteredData: requestData,
                 currPage: 1,
                 searchString: ''
               },
               volunteers: {
-                data: response.Volunteers,
-                filteredData: response.Volunteers,
+                data: volunteerData,
+                filteredData: volunteerData,
                 currPage: 1,
                 searchString: ''
               }
@@ -190,7 +208,7 @@ class Tables extends React.Component {
                 return (
                     <DropdownItem href="#" key={action.key + '_' + (rowData.r_id || rowData.v_id)}
                                   onClick={e => {
-                                    this.takeAction(action, rowData);
+                                    this.takeAction(action, rowData, tableConfig);
                                     e.preventDefault();
                                   }}>
                       {action.name}
@@ -345,6 +363,57 @@ class Tables extends React.Component {
     );
   }
 
+  takeAction(action, rowData, tableConfig) {
+    console.log(action, rowData, tableConfig);
+    this.setState({popupDetails: {isPopupOpen: true, action, rowData, tableConfig}});
+  }
+
+  getPopup() {
+    const {popupDetails} = this.state;
+    return (
+        <Popup open={popupDetails.isPopupOpen} closeOnEscape closeOnDocumentClick
+               position="right center"
+               contentStyle={{borderRadius: "0.375rem", minWidth: "50%", width: "unset"}}
+               className="col-md-6"
+               onClose={() => this.setState({popupDetails: {isPopupOpen: false}})}>
+          {close => (
+              <>
+                <CardHeader className="bg-transparent">
+                  <Row className="justify-content-end">
+                    <a className="close" href="#index" onClick={close}>
+                      &times;
+                    </a>
+                  </Row>
+                  <Row className="align-items-center">
+                    <div className="col text-center">
+                      <h2 className="mb-0">
+                        {popupDetails.action.name}
+                      </h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody className="pre-scrollable">
+                  <Row className="justify-content-center">
+                    {
+                      popupDetails.action.key === 'assign' ?
+                          <AssignVolunteerForm requestData={popupDetails.rowData} volunteerList={this.state.currState.volunteers.data}/> :
+                          popupDetails.action.key === 'update' ?
+                              (
+                                  popupDetails.tableConfig.key === 'volunteers' ?
+                                      <VolunteerRegistration existingData={popupDetails.rowData}/> :
+                                      <SeniorCitizenRegistration
+                                          existingData={popupDetails.rowData}/>
+                              ) :
+                              'No action defined for the option: ' + popupDetails.action.name
+                    }
+                  </Row>
+                </CardBody>
+              </>
+          )}
+        </Popup>
+    );
+  }
+
   render() {
     if (!localStorage.getItem(config.userIdStorageKey)) {
       this.props.history.push("/");
@@ -352,6 +421,7 @@ class Tables extends React.Component {
     }
     return (
         <>
+          {this.getPopup()}
           <Header showCards={false}/>
           {/* Page content */}
           <Container className="mt--7" fluid>
@@ -364,10 +434,6 @@ class Tables extends React.Component {
           </Container>
         </>
     );
-  }
-
-  takeAction(action, rowData) {
-    console.log(action, rowData);
   }
 }
 

@@ -18,9 +18,9 @@
 import React from "react";
 // reactstrap components
 import {Card, CardBody, CardHeader, Col, Container, Row} from "reactstrap";
-import Header from "components/Headers/Header.js";
-import LoginForm from "components/Forms/LoginForm";
-import config from "config/config";
+import Header from "../components/Headers/Header.js";
+import LoginForm from "../components/Forms/LoginForm";
+import {config} from "../config/config";
 
 class Login extends React.Component {
   render() {

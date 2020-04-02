@@ -21,7 +21,7 @@ import mapBoxGl from "mapbox-gl";
 import {Card, CardBody, CardHeader, Nav, NavItem, NavLink, Row} from "reactstrap";
 import classnames from "classnames";
 import {makeApiCall} from "../../utils/utils";
-import config from "../../config/config";
+import {config} from "../../config/config";
 // reactstrap components
 // core components
 
@@ -60,8 +60,6 @@ class Map extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log(prevState);
-    console.log(this.state);
     if (!prevState.map && this.state.map) {
       this.createSource(this.state.map);
       if (this.state.map.loaded()) {
@@ -76,7 +74,6 @@ class Map extends React.Component {
     const dataChanged =
         (prevState.volunteerData.features.length !== this.state.volunteerData.features.length) ||
         (prevState.requestData.features.length !== this.state.requestData.features.length);
-    console.log(isMapLoaded, wasMapPreviouslyNotLoaded, dataChanged);
     if (isMapLoaded &&
         (wasMapPreviouslyNotLoaded || dataChanged)
     ) {
@@ -189,7 +186,6 @@ class Map extends React.Component {
   }
 
   addMapLayers(map) {
-    console.log('addMapLayers', map);
     this.addLayers(map, volunteerLayerId, volunteerDataSource, 'volunteer-hands', 'green');
     this.addLayers(map, requestLayerId, requestDataSource, 'old', 'red');
   }
@@ -325,8 +321,6 @@ class Map extends React.Component {
 
   setLayerVisibility() {
     const {activeNav, map} = this.state;
-    console.log(map.getStyle().sources);
-    console.log(map.getStyle().layers);
     map.getStyle().layers.forEach(function (layer) {
       if (layer.id.indexOf('covid') === -1) {
         return;
