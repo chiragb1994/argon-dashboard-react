@@ -90,9 +90,9 @@ class Index extends React.Component {
                 <CardBody className="pre-scrollable">
                   <Row className="justify-content-center">
                     {this.state.activeForm === 1 ?
-                        <VolunteerRegistration/> :
+                        <VolunteerRegistration organisationOptions={organisationOptions}/> :
                         this.state.activeForm === 2 ?
-                            <SeniorCitizenRegistration/> :
+                            <SeniorCitizenRegistration organisationOptions={organisationOptions}/> :
                             <Nav pills horizontal>
                               <NavItem>
                                 <NavLink

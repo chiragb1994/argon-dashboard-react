@@ -12,9 +12,6 @@ export const makeApiCall = (url, method, data, successCb = null, notify = true) 
   fetch(url, requestOptions)
   .then(response => {
     if (response.status >= 400) {
-      if (response.body) {
-        return response.json();
-      }
       throw new Error("Bad response from server");
     }
     return response.json();
@@ -38,7 +35,7 @@ export const makeApiCall = (url, method, data, successCb = null, notify = true) 
     }
   })
   .catch(error => {
-    console.log(error);
+    console.log(url, error);
     NotificationManager.error(error.toString());
   });
 };
