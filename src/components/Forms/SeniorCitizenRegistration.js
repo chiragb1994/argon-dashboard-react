@@ -87,6 +87,10 @@ class SeniorCitizenRegistration extends React.Component {
       request.latitude = coords.latitude;
       request.longitude = coords.longitude;
     }
+    else {
+      request.latitude = 0.0;
+      request.longitude = 0.0;
+    }
     let data = {};
     let url;
     if (existingData && request.r_id) {

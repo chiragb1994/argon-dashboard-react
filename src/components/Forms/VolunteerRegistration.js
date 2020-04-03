@@ -83,6 +83,10 @@ class VolunteerRegistration extends React.Component {
       volunteer.latitude = coords.latitude;
       volunteer.longitude = coords.longitude;
     }
+    else {
+      volunteer.latitude = 0.0;
+      volunteer.longitude = 0.0;
+    }
     let data = {};
     let url;
     if (existingData && volunteer.v_id) {
